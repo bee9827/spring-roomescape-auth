@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.common.exception.InvalidInputException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,7 +38,7 @@ class ReservationTest {
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
             assertThatThrownBy(() -> reservation.validateCreate(NOW))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
     }
 
@@ -49,7 +51,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            assertThatCode(() -> reservation.cancelIfValid(NOW))
+            assertThatCode(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -59,8 +61,8 @@ class ReservationTest {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            assertThatThrownBy(() -> reservation.cancelIfValid(NOW))
-                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
+                    .isInstanceOf(InvalidInputException.class);
         }
     }
 
@@ -98,7 +100,7 @@ class ReservationTest {
         void returnsFalseWhenCanceled() {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
-            reservation.cancel(NOW);
+            reservation.cancelByAdmin(NOW);
 
             assertThat(reservation.isActive()).isFalse();
         }
@@ -113,7 +115,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            reservation.cancel(NOW);
+            reservation.cancelByAdmin(NOW);
 
             assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELED);
         }
@@ -124,7 +126,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            reservation.cancel(NOW);
+            reservation.cancelByAdmin(NOW);
 
             assertThat(reservation.getDeletedAt()).isEqualTo(NOW);
         }

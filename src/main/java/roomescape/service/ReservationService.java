@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DuplicateKeyException;
-import roomescape.common.exception.BadRequestException;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.InvalidInputException;
+import roomescape.common.exception.DuplicateEntityException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
@@ -37,9 +37,9 @@ public class ReservationService {
 
     public Reservation findActiveById(Long id) {
         Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
         if (!reservation.isActive()) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
         }
         return reservation;
     }
@@ -51,7 +51,7 @@ public class ReservationService {
         try {
             return reservationDao.insert(reservation);
         } catch (DuplicateKeyException e) {
-            throw new ConflictException("이미 존재하는 예약이 있습니다.");
+            throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
     }
 
@@ -59,10 +59,10 @@ public class ReservationService {
     public Reservation updateByUser(Long id, Long memberId, ReservationPatchDto request) {
         Reservation reservation = findActiveById(id);
         if (!reservation.isOwnedBy(memberId)) {
-            throw new BadRequestException("본인의 예약만 수정할 수 있습니다.");
+            throw new InvalidInputException("본인의 예약만 수정할 수 있습니다.");
         }
         Time time = timeDao.findById(request.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
         reservation.update(request.date(), time);
         return reservationDao.update(reservation);
     }
@@ -70,21 +70,18 @@ public class ReservationService {
     @Transactional
     public void cancel(Long id, Long memberId) {
         Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
-        if (!reservation.isOwnedBy(memberId)) {
-            throw new BadRequestException("본인의 예약만 취소할 수 있습니다.");
-        }
-        reservation.cancelIfValid(LocalDateTime.now());
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+        reservation.cancelByMember(memberId, LocalDateTime.now());
         reservationDao.update(reservation);
     }
 
     private Reservation buildReservation(Member member, ReservationRequestDto request) {
         Time time = timeDao.findById(request.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(request.themeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마입니다."));
         if (reservationDao.selectForUpdateByThemeIdAndTimeIdAndDate(request.themeId(), request.timeId(), request.date())) {
-            throw new ConflictException("이미 존재하는 예약이 있습니다.");
+            throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
         return new Reservation(member, request.date(), time, theme);
     }

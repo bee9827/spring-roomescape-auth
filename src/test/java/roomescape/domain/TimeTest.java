@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.common.exception.InvalidInputException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Named.named;
@@ -46,7 +48,7 @@ class TimeTest {
         @DisplayName("영업 시간 외이면 예외를 던진다")
         void throwsWhenOutOfBusinessHours(LocalTime startAt) {
             assertThatThrownBy(() -> new Time(startAt))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
 
         @Test

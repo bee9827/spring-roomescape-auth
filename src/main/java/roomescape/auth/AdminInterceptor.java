@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
@@ -49,7 +49,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             }
             request.setAttribute(LOGIN_MEMBER_ATTRIBUTE, member);
             return true;
-        } catch (NumberFormatException | ClassCastException | NotFoundException e) {
+        } catch (NumberFormatException | ClassCastException | EntityNotFoundException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }

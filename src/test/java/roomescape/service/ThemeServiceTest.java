@@ -16,8 +16,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.DuplicateEntityException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -103,7 +103,7 @@ class ThemeServiceTest {
         @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> themeService.findById(-1L))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 
@@ -125,7 +125,7 @@ class ThemeServiceTest {
             themeService.create(requestDto1);
 
             assertThatThrownBy(() -> themeService.create(requestDto1))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(DuplicateEntityException.class);
         }
     }
 
@@ -147,7 +147,7 @@ class ThemeServiceTest {
         @DisplayName("존재하지 않는 id를 삭제하면 예외를 반환한다")
         void throwsWhenDeletingNonExistentId() {
             assertThatThrownBy(() -> themeService.delete(-1L))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -159,7 +159,7 @@ class ThemeServiceTest {
 
             Long id = savedTheme.getId();
             assertThatThrownBy(() -> themeService.delete(id))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(DuplicateEntityException.class);
         }
     }
 

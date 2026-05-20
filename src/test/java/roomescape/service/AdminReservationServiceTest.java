@@ -17,7 +17,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -132,7 +132,7 @@ class AdminReservationServiceTest {
         @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> adminReservationService.findById(-1L))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 
@@ -183,7 +183,7 @@ class AdminReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime1.getId());
 
             assertThatThrownBy(() -> adminReservationService.update(-1L, updateDto))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -193,7 +193,7 @@ class AdminReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), -1L);
 
             assertThatThrownBy(() -> adminReservationService.update(saved.getId(), updateDto))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 
@@ -216,7 +216,7 @@ class AdminReservationServiceTest {
         @DisplayName("존재하지 않는 id를 취소하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> adminReservationService.cancelByAdmin(-1L))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 
@@ -236,7 +236,7 @@ class AdminReservationServiceTest {
         @DisplayName("존재하지 않는 id를 삭제하면 예외를 반환한다")
         void throwsWhenDeletingNonExistentId() {
             assertThatThrownBy(() -> adminReservationService.delete(-1L))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 }

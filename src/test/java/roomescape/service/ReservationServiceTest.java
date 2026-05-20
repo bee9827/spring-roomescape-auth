@@ -15,9 +15,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.common.exception.BadRequestException;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.InvalidInputException;
+import roomescape.common.exception.DuplicateEntityException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -95,7 +95,7 @@ class ReservationServiceTest {
             ReservationRequestDto dto = new ReservationRequestDto(LocalDate.now().plusDays(1), -1L, savedTheme1.getId());
 
             assertThatThrownBy(() -> reservationService.create(member, dto))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -104,7 +104,7 @@ class ReservationServiceTest {
             ReservationRequestDto dto = new ReservationRequestDto(LocalDate.now().plusDays(1), savedTime1.getId(), -1L);
 
             assertThatThrownBy(() -> reservationService.create(member, dto))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -113,7 +113,7 @@ class ReservationServiceTest {
             reservationService.create(member, requestDto1);
 
             assertThatThrownBy(() -> reservationService.create(member, requestDto1))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(DuplicateEntityException.class);
         }
 
         @Test
@@ -123,7 +123,7 @@ class ReservationServiceTest {
                     LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
 
             assertThatThrownBy(() -> reservationService.create(member, pastDto))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
     }
 
@@ -146,7 +146,7 @@ class ReservationServiceTest {
             reservationService.cancel(saved.getId(), member.getId());
 
             assertThatThrownBy(() -> reservationService.findActiveById(saved.getId()))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 
@@ -203,7 +203,7 @@ class ReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime2.getId());
 
             assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), -1L, updateDto))
-                    .isInstanceOf(BadRequestException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
 
         @Test
@@ -212,7 +212,7 @@ class ReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime1.getId());
 
             assertThatThrownBy(() -> reservationService.updateByUser(-1L, member.getId(), updateDto))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 
@@ -235,7 +235,7 @@ class ReservationServiceTest {
         @DisplayName("존재하지 않는 id를 취소하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> reservationService.cancel(-1L, member.getId()))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -245,7 +245,7 @@ class ReservationServiceTest {
                     new Reservation(member, LocalDate.now().minusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), member.getId()))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
 
         @Test
@@ -255,7 +255,7 @@ class ReservationServiceTest {
                     new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), -1L))
-                    .isInstanceOf(BadRequestException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
     }
 }

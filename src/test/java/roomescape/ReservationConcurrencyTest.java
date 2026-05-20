@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DuplicateEntityException;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -93,7 +93,7 @@ class ReservationConcurrencyTest {
                     startLatch.await();
                     reservationService.create(member, request);
                     successCount.incrementAndGet();
-                } catch (ConflictException e) {
+                } catch (DuplicateEntityException e) {
                     conflictCount.incrementAndGet();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -129,7 +129,7 @@ class ReservationConcurrencyTest {
                     startLatch.await();
                     reservationService.updateByUser(savedReservation.getId(), member.getId(), request);
                     successCount.incrementAndGet();
-                } catch (ConflictException e) {
+                } catch (DuplicateEntityException e) {
                     conflictCount.incrementAndGet();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

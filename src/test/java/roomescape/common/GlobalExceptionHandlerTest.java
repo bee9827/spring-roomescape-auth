@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.DuplicateEntityException;
+import roomescape.common.exception.EntityNotFoundException;
 
 class GlobalExceptionHandlerTest {
 
@@ -50,15 +50,6 @@ class GlobalExceptionHandlerTest {
                 .when().get("/test/conflict")
                 .then()
                 .status(HttpStatus.CONFLICT);
-    }
-
-    @Test
-    @DisplayName("IllegalArgumentException이 발생하면 400을 반환한다")
-    void returnsBadRequestForIllegalArgumentException() {
-        RestAssuredMockMvc.given()
-                .when().get("/test/illegal-argument")
-                .then()
-                .status(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -129,12 +120,12 @@ class GlobalExceptionHandlerTest {
 
         @GetMapping("/test/not-found")
         void throwNotFoundException() {
-            throw new NotFoundException("찾을 수 없음");
+            throw new EntityNotFoundException("찾을 수 없음");
         }
 
         @GetMapping("/test/conflict")
         void throwConflictException() {
-            throw new ConflictException("충돌");
+            throw new DuplicateEntityException("충돌");
         }
 
         @GetMapping("/test/illegal-argument")

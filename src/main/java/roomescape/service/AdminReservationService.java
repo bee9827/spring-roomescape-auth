@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.DuplicateEntityException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -48,13 +48,13 @@ public class AdminReservationService {
 
     public Reservation findById(Long id) {
         return reservationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
     }
 
     @Transactional
     public Reservation createByAdmin(AdminReservationRequestDto request) {
         Member member = memberDao.findById(request.memberId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 멤버입니다."));
         Reservation reservation = buildReservation(member, request);
         return reservationDao.insert(reservation);
     }
@@ -63,7 +63,7 @@ public class AdminReservationService {
     public Reservation update(Long id, ReservationPatchDto request) {
         Reservation reservation = findById(id);
         Time time = timeDao.findById(request.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
         reservation.update(request.date(), time);
         return reservationDao.update(reservation);
     }
@@ -71,25 +71,25 @@ public class AdminReservationService {
     @Transactional
     public void cancelByAdmin(Long id) {
         Reservation reservation = findById(id);
-        reservation.cancel(LocalDateTime.now());
+        reservation.cancelByAdmin(LocalDateTime.now());
         reservationDao.update(reservation);
     }
 
     @Transactional
     public void delete(Long id) {
         if (!reservationDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
         }
         reservationDao.delete(id);
     }
 
     private Reservation buildReservation(Member member, AdminReservationRequestDto request) {
         Time time = timeDao.findById(request.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(request.themeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마입니다."));
         if (reservationDao.selectForUpdateByThemeIdAndTimeIdAndDate(request.themeId(), request.timeId(), request.date())) {
-            throw new ConflictException("이미 존재하는 예약이 있습니다.");
+            throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
         return new Reservation(member, request.date(), time, theme);
     }

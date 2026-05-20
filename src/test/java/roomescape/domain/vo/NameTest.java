@@ -1,5 +1,7 @@
 package roomescape.domain.vo;
 
+import roomescape.common.exception.InvalidInputException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Named.named;
@@ -43,7 +45,7 @@ class NameTest {
         @DisplayName("유효하지 않은 이름이면 예외를 던진다")
         void throwsWhenInvalid(String value) {
             assertThatThrownBy(() -> new Name(value))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidInputException.class);
         }
     }
 }

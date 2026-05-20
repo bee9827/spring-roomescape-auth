@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.DuplicateEntityException;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
@@ -141,7 +141,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("version", currentVersion);
         int updated = jdbcTemplate.update(sql, params);
         if (updated == 0) {
-            throw new ConflictException("다른 사용자가 이미 수정했습니다. 다시 시도해주세요.");
+            throw new DuplicateEntityException("다른 사용자가 이미 수정했습니다. 다시 시도해주세요.");
         }
         return findById(reservation.getId()).orElseThrow();
     }

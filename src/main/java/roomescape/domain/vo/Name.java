@@ -1,6 +1,7 @@
 package roomescape.domain.vo;
 
 import java.util.Objects;
+import roomescape.common.exception.InvalidInputException;
 
 public class Name {
     private static final int MAX_LENGTH = 15;
@@ -14,7 +15,7 @@ public class Name {
 
     private void validateLength(String name) {
         if (name.isBlank() || name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("이름은 2~15글자만 가능합니다.");
+            throw new InvalidInputException("이름은 2~15글자만 가능합니다.");
         }
     }
 

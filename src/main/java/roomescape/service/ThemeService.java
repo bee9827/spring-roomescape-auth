@@ -6,8 +6,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.DuplicateEntityException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
@@ -34,37 +34,37 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마입니다."));
     }
 
     @Transactional
     public Theme create(ThemeRequestDto themeRequest) {
         Name name = new Name(themeRequest.name());
         if (themeDao.existsByName(name)) {
-            throw new ConflictException("이미 존재하는 테마 이름입니다.");
+            throw new DuplicateEntityException("이미 존재하는 테마 이름입니다.");
         }
 
         Theme theme = new Theme(name, themeRequest.thumbnailUrl(), themeRequest.description());
         try {
             return themeDao.insert(theme);
         } catch (DuplicateKeyException e) {
-            throw new ConflictException("이미 존재하는 테마 이름입니다.");
+            throw new DuplicateEntityException("이미 존재하는 테마 이름입니다.");
         }
     }
 
     @Transactional
     public void delete(Long id) {
         if (!themeDao.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
+            throw new EntityNotFoundException("존재하지 않는 테마입니다.");
         }
         if (reservationDao.existsByThemeId(id)) {
-            throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
+            throw new DuplicateEntityException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
 
         try {
             themeDao.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
+            throw new DuplicateEntityException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
     }
 

@@ -10,7 +10,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
@@ -61,7 +61,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
             }
             return memberService.findById(memberId);
-        } catch (NumberFormatException | ClassCastException | NotFoundException e) {
+        } catch (NumberFormatException | ClassCastException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }

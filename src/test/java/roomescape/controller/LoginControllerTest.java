@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.common.exception.BadRequestException;
+import roomescape.common.exception.InvalidInputException;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.dto.request.LoginRequestDto;
@@ -56,7 +56,7 @@ class LoginControllerTest {
         @Test
         @DisplayName("잘못된 이메일 또는 비밀번호로 로그인하면 400을 반환한다")
         void returnsBadRequestOnInvalidCredentials() {
-            willThrow(new BadRequestException("이메일 또는 비밀번호가 올바르지 않습니다."))
+            willThrow(new InvalidInputException("이메일 또는 비밀번호가 올바르지 않습니다."))
                     .given(memberService).login(any());
             LoginRequestDto request = new LoginRequestDto("user@test.com", "wrong");
 
