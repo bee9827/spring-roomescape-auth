@@ -75,7 +75,7 @@ public class ReservationJdbcDao implements ReservationDao {
         if (SENTINEL.equals(deletedAtValue)) {
             deletedAtValue = null;
         }
-        return new Reservation(
+        return Reservation.reconstruct(
                 rs.getLong("id"),
                 MEMBER_ROW_MAPPER.mapRow(rs, rowNum),
                 LocalDate.parse(rs.getString("date")),
@@ -118,7 +118,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("theme_id", reservation.getTheme().getId());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return Reservation.reconstruct(id, reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override

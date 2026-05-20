@@ -91,6 +91,6 @@ public class AdminReservationService {
         if (reservationDao.selectForUpdateByThemeIdAndTimeIdAndDate(request.themeId(), request.timeId(), request.date())) {
             throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
-        return new Reservation(member, request.date(), time, theme);
+        return Reservation.createByAdmin(member, request.date(), time, theme);
     }
 }

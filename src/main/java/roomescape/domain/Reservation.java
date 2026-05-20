@@ -15,8 +15,8 @@ public class Reservation {
     private ReservationStatus status;
     private LocalDateTime deletedAt;
 
-    public Reservation(Long id, Member member, LocalDate date, Time time, Theme theme,
-                       ReservationStatus status, LocalDateTime deletedAt) {
+    private Reservation(Long id, Member member, LocalDate date, Time time, Theme theme,
+                        ReservationStatus status, LocalDateTime deletedAt) {
         this.id = id;
         this.member = member;
         this.date = date;
@@ -26,18 +26,24 @@ public class Reservation {
         this.deletedAt = deletedAt;
     }
 
-    public Reservation(Long id, Member member, LocalDate date, Time time, Theme theme) {
-        this(id, member, date, time, theme, ReservationStatus.BOOKED, null);
-    }
-
-    public Reservation(Member member, LocalDate date, Time time, Theme theme) {
-        this(null, member, date, time, theme, ReservationStatus.BOOKED, null);
-    }
-
-    public void validateCreate(LocalDateTime now) {
+    public static Reservation createByUser(Member member, LocalDate date, Time time, Theme theme, LocalDateTime now) {
         if (time.isReservationBefore(now, date)) {
             throw new BusinessRuleViolationException("지난 시간에 대한 예약 생성은 불가능합니다.");
         }
+        return new Reservation(null, member, date, time, theme, ReservationStatus.BOOKED, null);
+    }
+
+    public static Reservation createByAdmin(Member member, LocalDate date, Time time, Theme theme) {
+        return new Reservation(null, member, date, time, theme, ReservationStatus.BOOKED, null);
+    }
+
+    public static Reservation reconstruct(Long id, Member member, LocalDate date, Time time, Theme theme,
+                                          ReservationStatus status, LocalDateTime deletedAt) {
+        return new Reservation(id, member, date, time, theme, status, deletedAt);
+    }
+
+    public static Reservation reconstruct(Long id, Member member, LocalDate date, Time time, Theme theme) {
+        return new Reservation(id, member, date, time, theme, ReservationStatus.BOOKED, null);
     }
 
     public void cancelByMember(Long memberId, LocalDateTime now) {

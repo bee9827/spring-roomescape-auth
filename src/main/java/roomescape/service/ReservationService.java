@@ -47,8 +47,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(Member member, ReservationRequestDto request) {
-        Reservation reservation = buildReservation(member, request);
-        reservation.validateCreate(LocalDateTime.now());
+        Reservation reservation = buildReservation(member, request, LocalDateTime.now());
         try {
             return reservationDao.insert(reservation);
         } catch (DuplicateKeyException e) {
@@ -76,7 +75,7 @@ public class ReservationService {
         reservationDao.update(reservation);
     }
 
-    private Reservation buildReservation(Member member, ReservationRequestDto request) {
+    private Reservation buildReservation(Member member, ReservationRequestDto request, LocalDateTime now) {
         Time time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(request.themeId())
@@ -84,6 +83,6 @@ public class ReservationService {
         if (reservationDao.selectForUpdateByThemeIdAndTimeIdAndDate(request.themeId(), request.timeId(), request.date())) {
             throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
-        return new Reservation(member, request.date(), time, theme);
+        return Reservation.createByUser(member, request.date(), time, theme, now);
     }
 }

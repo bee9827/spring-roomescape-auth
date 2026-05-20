@@ -144,7 +144,7 @@ class ReservationServiceTest {
         @DisplayName("CANCELED 예약을 조회하면 예외를 반환한다")
         void throwsWhenCanceled() {
             Reservation saved = reservationDao.insert(
-                    new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+                    Reservation.createByAdmin(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
             reservationService.cancel(saved.getId(), member.getId());
 
             assertThatThrownBy(() -> reservationService.findActiveById(saved.getId()))
@@ -169,7 +169,7 @@ class ReservationServiceTest {
         @DisplayName("취소된 예약도 반환한다")
         void includesCanceledReservations() {
             Reservation saved = reservationDao.insert(
-                    new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+                    Reservation.createByAdmin(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
             reservationService.cancel(saved.getId(), member.getId());
 
             assertThat(reservationService.findAllByMemberId(member.getId())).hasSize(1);
@@ -225,7 +225,7 @@ class ReservationServiceTest {
         @DisplayName("미래 예약을 취소하면 상태가 CANCELED로 변경된다")
         void cancelsReservation() {
             Reservation saved = reservationDao.insert(
-                    new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+                    Reservation.createByAdmin(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             reservationService.cancel(saved.getId(), member.getId());
 
@@ -244,7 +244,7 @@ class ReservationServiceTest {
         @DisplayName("이미 지난 예약을 취소하면 예외를 반환한다")
         void throwsWhenPastReservation() {
             Reservation saved = reservationDao.insert(
-                    new Reservation(member, LocalDate.now().minusDays(1), savedTime1, savedTheme1));
+                    Reservation.createByAdmin(member, LocalDate.now().minusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), member.getId()))
                     .isInstanceOf(BusinessRuleViolationException.class);
@@ -254,7 +254,7 @@ class ReservationServiceTest {
         @DisplayName("다른 사람의 예약을 취소하면 예외를 반환한다")
         void throwsWhenNotOwner() {
             Reservation saved = reservationDao.insert(
-                    new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+                    Reservation.createByAdmin(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), -1L))
                     .isInstanceOf(BusinessRuleViolationException.class);

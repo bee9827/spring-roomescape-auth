@@ -62,8 +62,8 @@ class ReservationJdbcDaoTest {
         @Test
         @DisplayName("전체 예약 목록을 조회한다")
         void findAll() {
-            Reservation r1 = reservationDao.insert(new Reservation(member, LocalDate.of(2026, 6, 1), time, theme));
-            Reservation r2 = reservationDao.insert(new Reservation(member, LocalDate.of(2026, 6, 2), time, theme));
+            Reservation r1 = reservationDao.insert(Reservation.createByAdmin(member, LocalDate.of(2026, 6, 1), time, theme));
+            Reservation r2 = reservationDao.insert(Reservation.createByAdmin(member, LocalDate.of(2026, 6, 2), time, theme));
 
             List<Reservation> result = reservationDao.findAll();
 
@@ -78,7 +78,7 @@ class ReservationJdbcDaoTest {
         @DisplayName("정상적으로 예약을 수정하면 최신 상태를 반환한다")
         void updatesReservation() {
             Reservation saved = reservationDao.insert(
-                    new Reservation(member, LocalDate.of(2026, 6, 1), time, theme));
+                    Reservation.createByAdmin(member, LocalDate.of(2026, 6, 1), time, theme));
 
             saved.update(LocalDate.of(2026, 6, 2), time);
             Reservation updated = reservationDao.update(saved);

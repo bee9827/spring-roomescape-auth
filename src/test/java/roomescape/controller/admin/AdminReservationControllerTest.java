@@ -42,7 +42,7 @@ class AdminReservationControllerTest {
     private final Member admin = new Member(1L, "어드민", "admin@test.com", "password", MemberRole.ADMIN);
     private final Time time = new Time(1L, LocalTime.of(13, 0));
     private final Theme theme = new Theme(1L, new Name("방탈출테마"), "http://example.com/img.jpg", "방탈출 테마 설명");
-    private final Reservation reservation = new Reservation(1L, admin, LocalDate.now().plusDays(1), time, theme);
+    private final Reservation reservation = Reservation.reconstruct(1L, admin, LocalDate.now().plusDays(1), time, theme);
 
     @Autowired
     private MockMvc mockMvc;

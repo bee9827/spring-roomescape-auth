@@ -30,10 +30,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ProblemDetail> handleException(
-            HttpMessageNotReadableException e,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<ProblemDetail> handleException(HttpMessageNotReadableException e, HttpServletRequest request) {
         Throwable cause = e.getCause();
         if (cause instanceof InvalidFormatException formatException) {
             String message = formatHandlers.stream()
@@ -47,10 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleValidation(
-            MethodArgumentNotValidException e,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
         List<Map<String, String>> invalidParams = e.getBindingResult().getFieldErrors().stream()
                 .map(error -> Map.of("field", error.getField(), "reason", error.getDefaultMessage()))
                 .toList();
@@ -60,37 +54,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ProblemDetail> handleTypeMismatch(
-            MethodArgumentTypeMismatchException e,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<ProblemDetail> handleTypeMismatch(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
         return ResponseEntity.badRequest()
                 .body(problem(HttpStatus.BAD_REQUEST, "타입 불일치", "잘못된 형식의 값입니다: " + e.getName(), request));
     }
 
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ProblemDetail> handleInvalidInput(
-            InvalidInputException e,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<ProblemDetail> handleInvalidInput(InvalidInputException e, HttpServletRequest request) {
         return ResponseEntity.badRequest()
                 .body(problem(HttpStatus.BAD_REQUEST, "잘못된 요청", e.getMessage(), request));
     }
 
     @ExceptionHandler(BusinessRuleViolationException.class)
-    public ResponseEntity<ProblemDetail> handleBusinessRuleViolation(
-            BusinessRuleViolationException e,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<ProblemDetail> handleBusinessRuleViolation(BusinessRuleViolationException e, HttpServletRequest request) {
         return ResponseEntity.badRequest()
                 .body(problem(HttpStatus.BAD_REQUEST, "비즈니스 규칙 위반", e.getMessage(), request));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleEntityNotFound(
-            EntityNotFoundException e,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<ProblemDetail> handleEntityNotFound(EntityNotFoundException e, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(problem(HttpStatus.NOT_FOUND, "리소스 없음", e.getMessage(), request));
     }

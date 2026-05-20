@@ -27,9 +27,8 @@ class ReservationTest {
         @DisplayName("예약 시간이 현재이면 예외를 던지지 않는다")
         void doesNotThrowWhenJustFuture() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            assertThatCode(() -> reservation.validateCreate(NOW))
+            assertThatCode(() -> Reservation.createByUser(MEMBER, NOW.toLocalDate(), time, THEME, NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -37,9 +36,8 @@ class ReservationTest {
         @DisplayName("예약 시간이 현재보다 1나노초 전이면 예외를 던진다")
         void throwsWhenJustPast() {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            assertThatThrownBy(() -> reservation.validateCreate(NOW))
+            assertThatThrownBy(() -> Reservation.createByUser(MEMBER, NOW.toLocalDate(), time, THEME, NOW))
                     .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
@@ -51,7 +49,7 @@ class ReservationTest {
         @DisplayName("예약 시간이 현재이면 예외를 던지지 않는다")
         void doesNotThrowWhenPresent() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
             assertThatCode(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
                     .doesNotThrowAnyException();
@@ -61,7 +59,7 @@ class ReservationTest {
         @DisplayName("예약 시간이 현재보다 1나노초 전이면 예외를 던진다")
         void throwsWhenJustPast() {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
             assertThatThrownBy(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
                     .isInstanceOf(BusinessRuleViolationException.class);
@@ -75,7 +73,7 @@ class ReservationTest {
         @DisplayName("날짜와 시간을 변경한다")
         void updatesDateAndTime() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
             Time newTime = new Time(2L, NOW.plusHours(2).toLocalTime());
 
             reservation.update(NOW.toLocalDate().plusDays(1), newTime);
@@ -92,7 +90,7 @@ class ReservationTest {
         @DisplayName("BOOKED 상태이면 true를 반환한다")
         void returnsTrueWhenBooked() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
             assertThat(reservation.isActive()).isTrue();
         }
@@ -101,7 +99,7 @@ class ReservationTest {
         @DisplayName("CANCELED 상태이면 false를 반환한다")
         void returnsFalseWhenCanceled() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
             reservation.cancelByAdmin(NOW);
 
             assertThat(reservation.isActive()).isFalse();
@@ -115,7 +113,7 @@ class ReservationTest {
         @DisplayName("취소 시 status가 CANCELED로 변경된다")
         void setsStatusToCanceled() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
             reservation.cancelByAdmin(NOW);
 
@@ -126,7 +124,7 @@ class ReservationTest {
         @DisplayName("취소 시 deletedAt이 now로 설정된다")
         void setsDeletedAt() {
             Time time = new Time(1L, NOW.toLocalTime());
-            Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
+            Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
             reservation.cancelByAdmin(NOW);
 

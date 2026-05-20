@@ -153,7 +153,7 @@ class TimeServiceTest {
         void throwsWhenTimeHasReservation() {
             Time savedTime = timeService.create(timeRequestDto1);
             Theme savedTheme = themeDao.insert(new Theme(new Name("테마"), "http://thumbnail_url", "설명"));
-            reservationDao.insert(new Reservation(member, LocalDate.now(), savedTime, savedTheme));
+            reservationDao.insert(Reservation.createByAdmin(member, LocalDate.now(), savedTime, savedTheme));
 
             Long id = savedTime.getId();
             assertThatThrownBy(() -> timeService.delete(id))
