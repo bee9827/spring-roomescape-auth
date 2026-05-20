@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import roomescape.common.exception.BusinessRuleViolationException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -159,7 +161,7 @@ class ThemeServiceTest {
 
             Long id = savedTheme.getId();
             assertThatThrownBy(() -> themeService.delete(id))
-                    .isInstanceOf(DuplicateEntityException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 

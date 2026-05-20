@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.common.exception.InvalidInputException;
+import roomescape.common.exception.BusinessRuleViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,16 +36,16 @@ public class Reservation {
 
     public void validateCreate(LocalDateTime now) {
         if (time.isReservationBefore(now, date)) {
-            throw new InvalidInputException("지난 시간에 대한 예약 생성은 불가능합니다.");
+            throw new BusinessRuleViolationException("지난 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 
     public void cancelByMember(Long memberId, LocalDateTime now) {
         if (!isOwnedBy(memberId)) {
-            throw new InvalidInputException("본인의 예약만 취소할 수 있습니다.");
+            throw new BusinessRuleViolationException("본인의 예약만 취소할 수 있습니다.");
         }
         if (getTime().isReservationBefore(now, date)) {
-            throw new InvalidInputException("지난 예약은 취소 불가능합니다.");
+            throw new BusinessRuleViolationException("지난 예약은 취소 불가능합니다.");
         }
         doCancel(now);
     }

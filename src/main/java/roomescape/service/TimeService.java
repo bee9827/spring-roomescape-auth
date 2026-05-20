@@ -4,6 +4,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.DuplicateEntityException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.ReservationDao;
@@ -46,7 +47,7 @@ public class TimeService {
             throw new EntityNotFoundException("존재하지 않는 시간입니다.");
         }
         if (reservationDao.existsByTimeId(id)) {
-            throw new DuplicateEntityException("예약이 존재하여 시간을 삭제할 수 없습니다.");
+            throw new BusinessRuleViolationException("예약이 존재하여 시간을 삭제할 수 없습니다.");
         }
 
         timeDao.delete(id);

@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import roomescape.common.exception.BusinessRuleViolationException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -123,7 +125,7 @@ class ReservationServiceTest {
                     LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
 
             assertThatThrownBy(() -> reservationService.create(member, pastDto))
-                    .isInstanceOf(InvalidInputException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 
@@ -203,7 +205,7 @@ class ReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime2.getId());
 
             assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), -1L, updateDto))
-                    .isInstanceOf(InvalidInputException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
 
         @Test
@@ -245,7 +247,7 @@ class ReservationServiceTest {
                     new Reservation(member, LocalDate.now().minusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), member.getId()))
-                    .isInstanceOf(InvalidInputException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
 
         @Test
@@ -255,7 +257,7 @@ class ReservationServiceTest {
                     new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), -1L))
-                    .isInstanceOf(InvalidInputException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 }

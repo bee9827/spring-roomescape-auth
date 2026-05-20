@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DuplicateKeyException;
+import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.InvalidInputException;
 import roomescape.common.exception.DuplicateEntityException;
 import roomescape.common.exception.EntityNotFoundException;
@@ -59,7 +60,7 @@ public class ReservationService {
     public Reservation updateByUser(Long id, Long memberId, ReservationPatchDto request) {
         Reservation reservation = findActiveById(id);
         if (!reservation.isOwnedBy(memberId)) {
-            throw new InvalidInputException("본인의 예약만 수정할 수 있습니다.");
+            throw new BusinessRuleViolationException("본인의 예약만 수정할 수 있습니다.");
         }
         Time time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));

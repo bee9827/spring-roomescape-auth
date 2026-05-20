@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.common.exception.BusinessRuleViolationException;
+
 import roomescape.common.exception.InvalidInputException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +40,7 @@ class ReservationTest {
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
             assertThatThrownBy(() -> reservation.validateCreate(NOW))
-                    .isInstanceOf(InvalidInputException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 
@@ -62,7 +64,7 @@ class ReservationTest {
             Reservation reservation = new Reservation(MEMBER, NOW.toLocalDate(), time, THEME);
 
             assertThatThrownBy(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
-                    .isInstanceOf(InvalidInputException.class);
+                    .isInstanceOf(BusinessRuleViolationException.class);
         }
     }
 

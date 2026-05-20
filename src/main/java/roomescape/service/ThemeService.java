@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.DuplicateEntityException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.ReservationDao;
@@ -58,13 +59,13 @@ public class ThemeService {
             throw new EntityNotFoundException("존재하지 않는 테마입니다.");
         }
         if (reservationDao.existsByThemeId(id)) {
-            throw new DuplicateEntityException("예약이 존재하여 테마를 삭제할 수 없습니다.");
+            throw new BusinessRuleViolationException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
 
         try {
             themeDao.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateEntityException("예약이 존재하여 테마를 삭제할 수 없습니다.");
+            throw new BusinessRuleViolationException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
     }
 
