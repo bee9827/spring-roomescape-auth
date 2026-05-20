@@ -86,7 +86,7 @@ class ThemeServiceTest {
             saved.add(themeService.create(requestDto1));
             saved.add(themeService.create(requestDto2));
 
-            assertThat(themeService.findAll()).usingRecursiveComparison().isEqualTo(saved);
+            assertThat(themeService.findAll()).isEqualTo(saved);
         }
     }
 
@@ -98,7 +98,7 @@ class ThemeServiceTest {
         void returnsThemeById() {
             Theme saved = themeService.create(requestDto1);
 
-            assertThat(themeService.findById(saved.getId())).usingRecursiveComparison().isEqualTo(saved);
+            assertThat(themeService.findById(saved.getId())).isEqualTo(saved);
         }
 
         @Test

@@ -84,7 +84,7 @@ class TimeServiceTest {
             saved.add(timeService.create(timeRequestDto1));
             saved.add(timeService.create(timeRequestDto2));
 
-            assertThat(timeService.findAll()).usingRecursiveComparison().isEqualTo(saved);
+            assertThat(timeService.findAll()).isEqualTo(saved);
         }
     }
 
@@ -96,7 +96,7 @@ class TimeServiceTest {
         void returnsTimeById() {
             Time saved = timeService.create(timeRequestDto1);
 
-            assertThat(timeService.findById(saved.getId())).usingRecursiveComparison().isEqualTo(saved);
+            assertThat(timeService.findById(saved.getId())).isEqualTo(saved);
         }
 
         @Test
