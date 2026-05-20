@@ -1,0 +1,31 @@
+# 다음 사이클 키워드
+
+> 완료된 항목은 ~~취소선~~, 진행 중은 🔄, 미완료는 그대로
+
+---
+
+## 코드 적용
+
+- [ ] **OncePerRequestFilter로 인증 필터 구현**
+  → 맥락: Interceptor의 포워딩 한계를 Filter로 해결. DispatcherType 설정으로 REQUEST/FORWARD 제어
+  → 출처: log_14, log_15
+
+- [ ] **OncePerRequestFilter에서 REQUEST와 FORWARD 모두 처리하려면?**
+  → 맥락: 들어올 때도, 포워딩할 때도 Filter를 실행하고 싶을 때 어떻게 설정하는가
+  → 출처: log_15
+
+---
+
+## 흐름 파악
+
+- [ ] **Interceptor 구현이 AOP 기반인가?**
+  → 맥락: AOP(프록시)와 Interceptor(DispatcherServlet 내부 호출)의 차이가 궁금함
+  → 출처: log_15
+
+---
+
+## 실전 판단
+
+- [ ] **도메인 예외와 HTTP 예외 분리 후 실제 프로젝트 적용 회고**
+  → 맥락: `InvalidInputException`, `BusinessRuleViolationException` 등으로 분리한 뒤 실제로 의미가 명확해졌는지 판단
+  → 출처: log_14 (구현 완료, 회고 필요)
