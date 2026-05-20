@@ -67,4 +67,8 @@
 ✅ IllegalArgumentException vs 커스텀 예외
    → 맥락: validateCreate, cancelByMember 등 기존 도메인 예외를 어떻게 바꿀지
    → 종류: 실전 판단
+
+✅ OncePerRequestFilter로 인증 필터 구현
+   → 맥락: Interceptor는 DispatcherServlet 이후 실행 → 내부 포워딩 시 인증 건너뛸 수 있음. Filter는 이전에 실행되어 안전
+   → 종류: 코드 적용
 ```
