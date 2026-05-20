@@ -143,7 +143,7 @@ class ReservationServiceTest {
         void throwsWhenCanceled() {
             Reservation saved = reservationDao.insert(
                     new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
-            reservationService.cancel(saved.getId());
+            reservationService.cancel(saved.getId(), member.getId());
 
             assertThatThrownBy(() -> reservationService.findActiveById(saved.getId()))
                     .isInstanceOf(NotFoundException.class);
@@ -168,7 +168,7 @@ class ReservationServiceTest {
         void includesCanceledReservations() {
             Reservation saved = reservationDao.insert(
                     new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
-            reservationService.cancel(saved.getId());
+            reservationService.cancel(saved.getId(), member.getId());
 
             assertThat(reservationService.findAllByMemberId(member.getId())).hasSize(1);
         }
@@ -225,7 +225,7 @@ class ReservationServiceTest {
             Reservation saved = reservationDao.insert(
                     new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
-            reservationService.cancel(saved.getId());
+            reservationService.cancel(saved.getId(), member.getId());
 
             Reservation canceled = reservationDao.findById(saved.getId()).orElseThrow();
             assertThat(canceled.getStatus()).isEqualTo(ReservationStatus.CANCELED);
@@ -234,7 +234,7 @@ class ReservationServiceTest {
         @Test
         @DisplayName("존재하지 않는 id를 취소하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
-            assertThatThrownBy(() -> reservationService.cancel(-1L))
+            assertThatThrownBy(() -> reservationService.cancel(-1L, member.getId()))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -244,8 +244,18 @@ class ReservationServiceTest {
             Reservation saved = reservationDao.insert(
                     new Reservation(member, LocalDate.now().minusDays(1), savedTime1, savedTheme1));
 
-            assertThatThrownBy(() -> reservationService.cancel(saved.getId()))
+            assertThatThrownBy(() -> reservationService.cancel(saved.getId(), member.getId()))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("다른 사람의 예약을 취소하면 예외를 반환한다")
+        void throwsWhenNotOwner() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+
+            assertThatThrownBy(() -> reservationService.cancel(saved.getId(), -1L))
+                    .isInstanceOf(BadRequestException.class);
         }
     }
 }

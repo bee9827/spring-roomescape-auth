@@ -80,7 +80,7 @@ class ReservationControllerTest {
         @Test
         @DisplayName("예약을 취소하면 204를 반환한다")
         void cancelsReservation() {
-            willDoNothing().given(reservationService).cancel(reservation.getId());
+            willDoNothing().given(reservationService).cancel(reservation.getId(), member.getId());
 
             RestAssuredMockMvc.given()
                     .sessionAttr("memberId", String.valueOf(member.getId()))
@@ -88,7 +88,7 @@ class ReservationControllerTest {
                     .then()
                     .status(HttpStatus.NO_CONTENT);
 
-            then(reservationService).should().cancel(reservation.getId());
+            then(reservationService).should().cancel(reservation.getId(), member.getId());
         }
     }
 

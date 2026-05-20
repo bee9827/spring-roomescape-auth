@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
@@ -47,7 +48,11 @@ public class ReservationService {
     public Reservation create(Member member, ReservationRequestDto request) {
         Reservation reservation = buildReservation(member, request);
         reservation.validateCreate(LocalDateTime.now());
-        return reservationDao.insert(reservation);
+        try {
+            return reservationDao.insert(reservation);
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException("이미 존재하는 예약이 있습니다.");
+        }
     }
 
     @Transactional
@@ -63,9 +68,12 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(Long id) {
+    public void cancel(Long id, Long memberId) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        if (!reservation.isOwnedBy(memberId)) {
+            throw new BadRequestException("본인의 예약만 취소할 수 있습니다.");
+        }
         reservation.cancelIfValid(LocalDateTime.now());
         reservationDao.update(reservation);
     }

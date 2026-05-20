@@ -22,6 +22,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         this.memberService = memberService;
     }
 
+    private Long parseMemberId(Object raw) {
+        if (raw instanceof Long l) return l;
+        if (raw instanceof String s) return Long.parseLong(s);
+        return null;
+    }
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginMember.class)
@@ -50,12 +56,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             if (session == null) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
             }
-            Long memberId = (Long) session.getAttribute("memberId");
+            Long memberId = parseMemberId(session.getAttribute("memberId"));
             if (memberId == null) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
             }
             return memberService.findById(memberId);
-        } catch (ClassCastException | NotFoundException e) {
+        } catch (NumberFormatException | ClassCastException | NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }

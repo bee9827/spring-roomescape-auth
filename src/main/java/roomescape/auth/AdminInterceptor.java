@@ -19,6 +19,12 @@ public class AdminInterceptor implements HandlerInterceptor {
         this.memberService = memberService;
     }
 
+    private Long parseMemberId(Object raw) {
+        if (raw instanceof Long l) return l;
+        if (raw instanceof String s) return Long.parseLong(s);
+        return null;
+    }
+
     @Override
     public boolean preHandle(
             HttpServletRequest request,
@@ -31,7 +37,11 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
         try {
-            Long memberId = (Long) session.getAttribute("memberId");
+            Long memberId = parseMemberId(session.getAttribute("memberId"));
+            if (memberId == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return false;
+            }
             Member member = memberService.findById(memberId);
             if (!member.isAdmin()) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -39,7 +49,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             }
             request.setAttribute(LOGIN_MEMBER_ATTRIBUTE, member);
             return true;
-        } catch (ClassCastException | NotFoundException e) {
+        } catch (NumberFormatException | ClassCastException | NotFoundException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
