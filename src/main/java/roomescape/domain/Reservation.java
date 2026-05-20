@@ -15,36 +15,42 @@ public class Reservation {
     private ReservationStatus status;
     private LocalDateTime deletedAt;
 
-    private Reservation(Long id, Member member, LocalDate date, Time time, Theme theme,
-                        ReservationStatus status, LocalDateTime deletedAt, long version) {
-        this.id = id;
-        this.member = member;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-        this.status = status;
-        this.version = version;
-        this.deletedAt = deletedAt;
+    private Reservation(Builder builder) {
+        this.id = builder.id;
+        this.member = builder.member;
+        this.date = builder.date;
+        this.time = builder.time;
+        this.theme = builder.theme;
+        this.status = builder.status;
+        this.deletedAt = builder.deletedAt;
+        this.version = builder.version;
     }
 
     public static Reservation createByUser(Member member, LocalDate date, Time time, Theme theme, LocalDateTime now) {
         if (time.isReservationBefore(now, date)) {
             throw new BusinessRuleViolationException("지난 시간에 대한 예약 생성은 불가능합니다.");
         }
-        return new Reservation(null, member, date, time, theme, ReservationStatus.BOOKED, null, 0L);
+        return new Builder()
+                .member(member).date(date).time(time).theme(theme)
+                .build();
     }
 
     public static Reservation createByAdmin(Member member, LocalDate date, Time time, Theme theme) {
-        return new Reservation(null, member, date, time, theme, ReservationStatus.BOOKED, null, 0L);
+        return new Builder()
+                .member(member).date(date).time(time).theme(theme)
+                .build();
     }
 
     public static Reservation reconstruct(Long id, Member member, LocalDate date, Time time, Theme theme,
                                           ReservationStatus status, LocalDateTime deletedAt, long version) {
-        return new Reservation(id, member, date, time, theme, status, deletedAt, version);
+        return new Builder()
+                .id(id).member(member).date(date).time(time).theme(theme)
+                .status(status).deletedAt(deletedAt).version(version)
+                .build();
     }
 
     public static Reservation reconstruct(Long id, Member member, LocalDate date, Time time, Theme theme) {
-        return new Reservation(id, member, date, time, theme, ReservationStatus.BOOKED, null, 0L);
+        return reconstruct(id, member, date, time, theme, ReservationStatus.BOOKED, null, 0L);
     }
 
     public void cancelByMember(Long memberId, LocalDateTime now) {
@@ -80,11 +86,6 @@ public class Reservation {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Reservation that)) {
             return false;
@@ -92,35 +93,72 @@ public class Reservation {
         return id != null && Objects.equals(id, that.id);
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
-    public Member getMember() {
-        return member;
-    }
+    public Long getId() { return id; }
+    public Member getMember() { return member; }
+    public LocalDate getDate() { return date; }
+    public Time getTime() { return time; }
+    public Theme getTheme() { return theme; }
+    public ReservationStatus getStatus() { return status; }
+    public long getVersion() { return version; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
 
-    public LocalDate getDate() {
-        return date;
-    }
+    private static class Builder {
+        private Long id;
+        private Member member;
+        private LocalDate date;
+        private Time time;
+        private Theme theme;
+        private ReservationStatus status = ReservationStatus.BOOKED;
+        private LocalDateTime deletedAt;
+        private long version = 0L;
 
-    public Time getTime() {
-        return time;
-    }
+        Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
 
-    public Theme getTheme() {
-        return theme;
-    }
+        Builder member(Member member) {
+            this.member = member;
+            return this;
+        }
 
-    public ReservationStatus getStatus() {
-        return status;
-    }
+        Builder date(LocalDate date) {
+            this.date = date;
+            return this;
+        }
 
-    public long getVersion() {
-        return version;
-    }
+        Builder time(Time time) {
+            this.time = time;
+            return this;
+        }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
+        Builder theme(Theme theme) {
+            this.theme = theme;
+            return this;
+        }
+
+        Builder status(ReservationStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        Builder deletedAt(LocalDateTime deletedAt) {
+            this.deletedAt = deletedAt;
+            return this;
+        }
+
+        Builder version(long version) {
+            this.version = version;
+            return this;
+        }
+
+        Reservation build() {
+            return new Reservation(this);
+        }
     }
 }
