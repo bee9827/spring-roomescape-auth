@@ -79,23 +79,16 @@ public class Reservation {
     }
 
     @Override
-    public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(member);
-        result = 31 * result + Objects.hashCode(date);
-        result = 31 * result + Objects.hashCode(time);
-        result = 31 * result + Objects.hashCode(theme);
-        return result;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (!(o instanceof Reservation that)) {
             return false;
         }
-        return Objects.equals(id, that.id) && Objects.equals(member, that.member)
-                && Objects.equals(date, that.date) && Objects.equals(time, that.time)
-                && Objects.equals(theme, that.theme);
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     public Long getId() {
