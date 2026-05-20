@@ -1,6 +1,8 @@
 package roomescape.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class Member {
     private final Long id;
@@ -21,6 +23,10 @@ public class Member {
         return role == MemberRole.ADMIN;
     }
 
+    public boolean matchesPassword(String rawPassword, PasswordEncoder encoder) {
+        return encoder.matches(rawPassword, this.password);
+    }
+
     public Long getId() {
         return id;
     }
@@ -33,6 +39,7 @@ public class Member {
         return email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

@@ -1,5 +1,5 @@
-INSERT INTO members(name, email, password, role) VALUES ('어드민', 'admin@test.com', 'password', 'ADMIN');
-INSERT INTO members(name, email, password, role) VALUES ('유저', 'user@test.com', 'password', 'USER');
+INSERT INTO members(name, email, password, role) VALUES ('어드민', 'admin@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN');
+INSERT INTO members(name, email, password, role) VALUES ('유저', 'user@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER');
 
 INSERT INTO times(start_at) values ('10:00');
 INSERT INTO times(start_at) values ('12:00');

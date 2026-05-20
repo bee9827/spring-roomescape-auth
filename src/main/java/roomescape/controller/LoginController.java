@@ -25,7 +25,7 @@ public class LoginController {
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto request, HttpServletRequest httpRequest) {
         Member member = memberService.login(request);
         HttpSession session = httpRequest.getSession();
-        session.setAttribute("memberId", String.valueOf(member.getId()));
+        session.setAttribute("memberId", member.getId());
         return ResponseEntity.ok().build();
     }
 

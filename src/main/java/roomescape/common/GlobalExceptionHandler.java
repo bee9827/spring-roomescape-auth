@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ProblemDetail> handleDataIntegrityViolation(DataIntegrityViolationException e, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(problem(HttpStatus.CONFLICT, "데이터 충돌", "이미 존재하는 예약이 있습니다.", request));
+                .body(problem(HttpStatus.CONFLICT, "데이터 충돌", "이미 존재하는 데이터와 충돌이 발생했습니다.", request));
     }
 
     private ProblemDetail problem(HttpStatus status, String title, String detail, HttpServletRequest request) {

@@ -3,12 +3,14 @@ package roomescape.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
-import org.springframework.lang.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.server.ResponseStatusException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
@@ -28,14 +30,33 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(
-            @NonNull MethodParameter parameter,
+            MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        HttpSession session = request.getSession(false);
-        Long memberId = Long.parseLong(session.getAttribute("memberId").toString());
-        return memberService.findById(memberId);
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        Object cached = request.getAttribute(AdminInterceptor.LOGIN_MEMBER_ATTRIBUTE);
+        if (cached instanceof Member member) {
+            return member;
+        }
+
+        try {
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            }
+            Long memberId = (Long) session.getAttribute("memberId");
+            if (memberId == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            }
+            return memberService.findById(memberId);
+        } catch (ClassCastException | NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

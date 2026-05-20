@@ -1,8 +1,10 @@
 package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +22,7 @@ import roomescape.dto.response.AdminReservationResponseDto;
 import roomescape.dto.response.PageResponse;
 import roomescape.service.AdminReservationService;
 
+@Validated
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
@@ -31,8 +34,8 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<PageResponse<AdminReservationResponseDto>> findAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @Min(0) @RequestParam(defaultValue = "0") int page,
+            @Min(1) @RequestParam(defaultValue = "10") int size
     ) {
         PageResponse<AdminReservationResponseDto> responses = reservationService.findAll(page, size)
                 .map(AdminReservationResponseDto::from);

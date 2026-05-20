@@ -191,13 +191,14 @@ public class ReservationJdbcDao implements ReservationDao {
         String sql = """
                 SELECT id FROM reservations
                 WHERE theme_id = :themeId AND time_id = :timeId AND date = :date
-                AND deleted_at = '9999-12-31 00:00:00'
+                AND deleted_at = :sentinel
                 FOR UPDATE
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("themeId", themeId)
                 .addValue("timeId", timeId)
-                .addValue("date", date);
+                .addValue("date", date)
+                .addValue("sentinel", SENTINEL);
         return !jdbcTemplate.queryForList(sql, params, Long.class).isEmpty();
     }
 

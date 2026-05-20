@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ConflictException;
@@ -13,26 +16,30 @@ import roomescape.dto.request.SignupRequestDto;
 @Service
 public class MemberService {
     private final MemberDao memberDao;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public Member login(LoginRequestDto request) {
         Member member = memberDao.findByEmail(request.email())
                 .orElseThrow(() -> new BadRequestException("이메일 또는 비밀번호가 올바르지 않습니다."));
-        if (!member.getPassword().equals(request.password())) {
+        if (!member.matchesPassword(request.password(), passwordEncoder)) {
             throw new BadRequestException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
         return member;
     }
 
     public Member signup(SignupRequestDto request) {
-        if (memberDao.findByEmail(request.email()).isPresent()) {
+        String encodedPassword = passwordEncoder.encode(request.password());
+        Member member = new Member(null, request.name(), request.email(), encodedPassword, MemberRole.USER);
+        try {
+            return memberDao.insert(member);
+        } catch (DuplicateKeyException e) {
             throw new ConflictException("이미 사용 중인 이메일입니다.");
         }
-        Member member = new Member(null, request.name(), request.email(), request.password(), MemberRole.USER);
-        return memberDao.insert(member);
     }
 
     public Member findById(Long id) {

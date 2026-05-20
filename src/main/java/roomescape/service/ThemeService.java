@@ -2,6 +2,8 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
@@ -43,7 +45,11 @@ public class ThemeService {
         }
 
         Theme theme = new Theme(name, themeRequest.thumbnailUrl(), themeRequest.description());
-        return themeDao.insert(theme);
+        try {
+            return themeDao.insert(theme);
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException("이미 존재하는 테마 이름입니다.");
+        }
     }
 
     @Transactional
@@ -55,7 +61,11 @@ public class ThemeService {
             throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
 
-        themeDao.delete(id);
+        try {
+            themeDao.delete(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
+        }
     }
 
     public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {
