@@ -55,9 +55,7 @@ public class Reservation {
     }
 
     public void cancelByMember(Long memberId, LocalDateTime now) {
-        if (!isOwnedBy(memberId)) {
-            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
-        }
+        validateOwnership(memberId);
         if (getTime().isReservationBefore(now, date)) {
             throw new BusinessRuleViolationException("지난 예약은 취소 불가능합니다.");
         }
@@ -74,9 +72,7 @@ public class Reservation {
     }
 
     public void updateByMember(Long memberId, LocalDate date, Time time) {
-        if (!isOwnedBy(memberId)) {
-            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
-        }
+        validateOwnership(memberId);
         this.date = date;
         this.time = time;
     }
@@ -90,8 +86,10 @@ public class Reservation {
         return status == ReservationStatus.BOOKED;
     }
 
-    public boolean isOwnedBy(Long memberId) {
-        return member.getId().equals(memberId);
+    private void validateOwnership(Long memberId) {
+        if (!member.getId().equals(memberId)) {
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
+        }
     }
 
     @Override
