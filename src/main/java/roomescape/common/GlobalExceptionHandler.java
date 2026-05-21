@@ -14,12 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.common.exception.BusinessRuleViolationException;
-import roomescape.common.exception.DuplicateEntityException;
-import roomescape.common.exception.EntityNotFoundException;
-import roomescape.common.exception.InvalidInputException;
-import roomescape.common.exception.UnauthenticatedException;
-import roomescape.common.exception.UnauthorizedException;
+import roomescape.common.exception.DomainException;
 import roomescape.common.exception.handler.FormatHandler;
 
 @RestControllerAdvice
@@ -61,40 +56,11 @@ public class GlobalExceptionHandler {
                 .body(problem(HttpStatus.BAD_REQUEST, "타입 불일치", "잘못된 형식의 값입니다: " + e.getName(), request));
     }
 
-    @ExceptionHandler(UnauthenticatedException.class)
-    public ResponseEntity<ProblemDetail> handleUnauthenticated(UnauthenticatedException e, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(problem(HttpStatus.UNAUTHORIZED, "인증 실패", e.getMessage(), request));
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ProblemDetail> handleUnauthorized(UnauthorizedException e, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(problem(HttpStatus.FORBIDDEN, "권한 없음", e.getMessage(), request));
-    }
-
-    @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ProblemDetail> handleInvalidInput(InvalidInputException e, HttpServletRequest request) {
-        return ResponseEntity.badRequest()
-                .body(problem(HttpStatus.BAD_REQUEST, "잘못된 요청", e.getMessage(), request));
-    }
-
-    @ExceptionHandler(BusinessRuleViolationException.class)
-    public ResponseEntity<ProblemDetail> handleBusinessRuleViolation(BusinessRuleViolationException e, HttpServletRequest request) {
-        return ResponseEntity.badRequest()
-                .body(problem(HttpStatus.BAD_REQUEST, "비즈니스 규칙 위반", e.getMessage(), request));
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleEntityNotFound(EntityNotFoundException e, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(problem(HttpStatus.NOT_FOUND, "리소스 없음", e.getMessage(), request));
-    }
-
-    @ExceptionHandler(DuplicateEntityException.class)
-    public ResponseEntity<ProblemDetail> handleDuplicateEntity(DuplicateEntityException e, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(problem(HttpStatus.CONFLICT, "데이터 충돌", e.getMessage(), request));
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ProblemDetail> handleDomainException(DomainException e, HttpServletRequest request) {
+        HttpStatus status = ExceptionHttpStatusMapper.resolve(e);
+        return ResponseEntity.status(status)
+                .body(problem(status, status.getReasonPhrase(), e.getMessage(), request));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
