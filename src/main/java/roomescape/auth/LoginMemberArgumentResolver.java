@@ -3,14 +3,13 @@ package roomescape.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.server.ResponseStatusException;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.common.exception.UnauthenticatedException;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
@@ -43,20 +42,20 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UnauthenticatedException();
         }
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+                throw new UnauthenticatedException();
             }
             Long memberId = parseMemberId(session.getAttribute("memberId"));
             if (memberId == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+                throw new UnauthenticatedException();
             }
             return memberService.findById(memberId);
         } catch (NumberFormatException | EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UnauthenticatedException();
         }
     }
 }

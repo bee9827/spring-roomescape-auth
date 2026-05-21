@@ -18,6 +18,8 @@ import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.DuplicateEntityException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.common.exception.InvalidInputException;
+import roomescape.common.exception.UnauthenticatedException;
+import roomescape.common.exception.UnauthorizedException;
 import roomescape.common.exception.handler.FormatHandler;
 
 @RestControllerAdvice
@@ -57,6 +59,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ProblemDetail> handleTypeMismatch(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
         return ResponseEntity.badRequest()
                 .body(problem(HttpStatus.BAD_REQUEST, "타입 불일치", "잘못된 형식의 값입니다: " + e.getName(), request));
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<ProblemDetail> handleUnauthenticated(UnauthenticatedException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(problem(HttpStatus.UNAUTHORIZED, "인증 실패", e.getMessage(), request));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ProblemDetail> handleUnauthorized(UnauthorizedException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(problem(HttpStatus.FORBIDDEN, "권한 없음", e.getMessage(), request));
     }
 
     @ExceptionHandler(InvalidInputException.class)
