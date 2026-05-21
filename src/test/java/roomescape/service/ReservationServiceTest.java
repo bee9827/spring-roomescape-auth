@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.InvalidInputException;
 import roomescape.common.exception.DuplicateEntityException;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.common.exception.HiddenResourceException;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -205,7 +206,7 @@ class ReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime2.getId());
 
             assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), -1L, updateDto))
-                    .isInstanceOf(EntityNotFoundException.class);
+                    .isInstanceOf(HiddenResourceException.class);
         }
 
         @Test
@@ -257,7 +258,7 @@ class ReservationServiceTest {
                     Reservation.createByAdmin(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), -1L))
-                    .isInstanceOf(EntityNotFoundException.class);
+                    .isInstanceOf(HiddenResourceException.class);
         }
     }
 }

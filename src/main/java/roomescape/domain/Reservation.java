@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.common.exception.BusinessRuleViolationException;
-import roomescape.common.exception.EntityNotFoundException;
+import roomescape.common.exception.HiddenResourceException;
 
 public class Reservation {
     private final Long id;
@@ -88,7 +88,7 @@ public class Reservation {
 
     private void validateOwnership(Long memberId) {
         if (!member.getId().equals(memberId)) {
-            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
+            throw new HiddenResourceException();
         }
     }
 

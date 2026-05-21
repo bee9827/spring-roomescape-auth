@@ -2,11 +2,9 @@ package roomescape.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.dao.DuplicateKeyException;
-import roomescape.common.exception.BusinessRuleViolationException;
-import roomescape.common.exception.InvalidInputException;
 import roomescape.common.exception.DuplicateEntityException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.dao.ReservationDao;
@@ -77,7 +75,8 @@ public class ReservationService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
         Theme theme = themeDao.findById(request.themeId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마입니다."));
-        if (reservationDao.selectForUpdateByThemeIdAndTimeIdAndDate(request.themeId(), request.timeId(), request.date())) {
+        if (reservationDao.selectForUpdateByThemeIdAndTimeIdAndDate(request.themeId(), request.timeId(),
+                request.date())) {
             throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
         return Reservation.createByUser(member, request.date(), time, theme, now);
