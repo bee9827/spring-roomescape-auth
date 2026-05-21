@@ -45,12 +45,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-
-        Object cached = request.getAttribute(AdminInterceptor.LOGIN_MEMBER_ATTRIBUTE);
-        if (cached instanceof Member member) {
-            return member;
-        }
-
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -61,7 +55,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
             }
             return memberService.findById(memberId);
-        } catch (NumberFormatException | ClassCastException | EntityNotFoundException e) {
+        } catch (NumberFormatException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }

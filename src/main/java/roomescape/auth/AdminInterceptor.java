@@ -13,7 +13,6 @@ import roomescape.service.MemberService;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
-    public static final String LOGIN_MEMBER_ATTRIBUTE = "loginMember";
 
     private final MemberService memberService;
 
@@ -35,16 +34,12 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
         try {
             Long memberId = parseMemberId(session.getAttribute("memberId"));
-            if (memberId == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-            }
             Member member = memberService.findById(memberId);
             if (!member.isAdmin()) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN);
             }
-            request.setAttribute(LOGIN_MEMBER_ATTRIBUTE, member);
             return true;
-        } catch (NumberFormatException | ClassCastException | EntityNotFoundException e) {
+        } catch (NumberFormatException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
