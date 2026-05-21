@@ -3,7 +3,9 @@ package roomescape.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.Member;
@@ -26,32 +28,24 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler
-    ) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("memberId") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         try {
             Long memberId = parseMemberId(session.getAttribute("memberId"));
             if (memberId == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
             }
             Member member = memberService.findById(memberId);
             if (!member.isAdmin()) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return false;
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
             }
             request.setAttribute(LOGIN_MEMBER_ATTRIBUTE, member);
             return true;
         } catch (NumberFormatException | ClassCastException | EntityNotFoundException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
 }
