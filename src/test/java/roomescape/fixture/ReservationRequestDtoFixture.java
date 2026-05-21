@@ -10,14 +10,14 @@ public class ReservationRequestDtoFixture {
     private static final Long VALID_THEME_ID = 1L;
 
     public static ReservationRequestDto withNullDate() {
-        return new ReservationRequestDto(null, VALID_TIME_ID, VALID_THEME_ID);
+        return new ReservationRequestDto(null, VALID_TIME_ID, VALID_THEME_ID, null);
     }
 
     public static ReservationRequestDto withNullTimeId() {
-        return new ReservationRequestDto(VALID_DATE, null, VALID_THEME_ID);
+        return new ReservationRequestDto(VALID_DATE, null, VALID_THEME_ID, null);
     }
 
     public static ReservationRequestDto withNullThemeId() {
-        return new ReservationRequestDto(VALID_DATE, VALID_TIME_ID, null);
+        return new ReservationRequestDto(VALID_DATE, VALID_TIME_ID, null, null);
     }
 }

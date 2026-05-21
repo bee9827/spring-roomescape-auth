@@ -8,17 +8,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminInterceptor;
 import roomescape.auth.AuthInterceptor;
 import roomescape.auth.LoginMemberArgumentResolver;
+import roomescape.auth.ManagerInterceptor;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     private final AuthInterceptor authInterceptor;
     private final AdminInterceptor adminInterceptor;
+    private final ManagerInterceptor managerInterceptor;
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
-    public WebMvcConfig(AuthInterceptor authInterceptor, AdminInterceptor adminInterceptor,
-            LoginMemberArgumentResolver loginMemberArgumentResolver) {
+    public WebMvcConfig(
+            AuthInterceptor authInterceptor,
+            AdminInterceptor adminInterceptor,
+            ManagerInterceptor managerInterceptor,
+            LoginMemberArgumentResolver loginMemberArgumentResolver
+    ) {
         this.authInterceptor = authInterceptor;
         this.adminInterceptor = adminInterceptor;
+        this.managerInterceptor = managerInterceptor;
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
     }
 
@@ -31,6 +38,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 );
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
+        registry.addInterceptor(managerInterceptor)
+                .addPathPatterns("/manager/**");
     }
 
     @Override

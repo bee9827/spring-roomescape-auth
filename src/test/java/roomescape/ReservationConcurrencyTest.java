@@ -79,7 +79,8 @@ class ReservationConcurrencyTest {
         ReservationRequestDto request = new ReservationRequestDto(
                 LocalDate.now().plusDays(2),
                 time.getId(),
-                theme.getId()
+                theme.getId(),
+                null
         );
 
         AtomicInteger successCount = new AtomicInteger(0);

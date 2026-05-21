@@ -18,7 +18,8 @@ public class MemberJdbcDao implements MemberDao {
             rs.getString("name"),
             rs.getString("email"),
             rs.getString("password"),
-            MemberRole.valueOf(rs.getString("role"))
+            MemberRole.valueOf(rs.getString("role")),
+            rs.getObject("store_id", Long.class)
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -29,7 +30,7 @@ public class MemberJdbcDao implements MemberDao {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("members")
                 .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "email", "password", "role");
+                .usingColumns("name", "email", "password", "role", "store_id");
     }
 
     @Override
@@ -38,16 +39,18 @@ public class MemberJdbcDao implements MemberDao {
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
-                .addValue("role", member.getRole().name());
+                .addValue("role", member.getRole().name())
+                .addValue("store_id", member.getStoreId());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(),
+                member.getRole(), member.getStoreId());
     }
 
     @Override
     public Optional<Member> findByEmail(String email) {
         try {
             Member member = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password, role FROM members WHERE email = ?",
+                    "SELECT id, name, email, password, role, store_id FROM members WHERE email = ?",
                     ROW_MAPPER, email);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
@@ -59,7 +62,7 @@ public class MemberJdbcDao implements MemberDao {
     public Optional<Member> findById(Long id) {
         try {
             Member member = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password, role FROM members WHERE id = ?",
+                    "SELECT id, name, email, password, role, store_id FROM members WHERE id = ?",
                     ROW_MAPPER, id);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {

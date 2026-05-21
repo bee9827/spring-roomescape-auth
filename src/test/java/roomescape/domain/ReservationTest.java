@@ -28,7 +28,7 @@ class ReservationTest {
         void doesNotThrowWhenJustFuture() {
             Time time = new Time(1L, NOW.toLocalTime());
 
-            assertThatCode(() -> Reservation.createByUser(MEMBER, NOW.toLocalDate(), time, THEME, NOW))
+            assertThatCode(() -> Reservation.createByUser(MEMBER, NOW.toLocalDate(), time, THEME, null, NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -37,7 +37,7 @@ class ReservationTest {
         void throwsWhenJustPast() {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
 
-            assertThatThrownBy(() -> Reservation.createByUser(MEMBER, NOW.toLocalDate(), time, THEME, NOW))
+            assertThatThrownBy(() -> Reservation.createByUser(MEMBER, NOW.toLocalDate(), time, THEME, null, NOW))
                     .isInstanceOf(BusinessRuleViolationException.class);
         }
     }

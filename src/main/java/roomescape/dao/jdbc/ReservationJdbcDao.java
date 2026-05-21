@@ -32,11 +32,13 @@ public class ReservationJdbcDao implements ReservationDao {
                 r.status,
                 r.deleted_at,
                 r.version,
+                r.store_id,
                 m.id AS member_id,
                 m.name AS member_name,
                 m.email AS member_email,
                 m.password AS member_password,
                 m.role AS member_role,
+                m.store_id AS member_store_id,
                 t.id AS time_id,
                 t.start_at AS time_start_at,
                 th.id AS theme_id,
@@ -67,7 +69,8 @@ public class ReservationJdbcDao implements ReservationDao {
                     rs.getString("member_name"),
                     rs.getString("member_email"),
                     rs.getString("member_password"),
-                    MemberRole.valueOf(rs.getString("member_role"))
+                    MemberRole.valueOf(rs.getString("member_role")),
+                    rs.getObject("member_store_id", Long.class)
             );
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
         Timestamp deletedAt = rs.getTimestamp("deleted_at");
@@ -83,7 +86,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 THEME_ROW_MAPPER.mapRow(rs, rowNum),
                 ReservationStatus.valueOf(rs.getString("status")),
                 deletedAtValue,
-                rs.getLong("version")
+                rs.getLong("version"),
+                rs.getObject("store_id", Long.class)
         );
     };
 
@@ -95,7 +99,7 @@ public class ReservationJdbcDao implements ReservationDao {
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservations")
                 .usingGeneratedKeyColumns("id")
-                .usingColumns("member_id", "date", "time_id", "theme_id");
+                .usingColumns("member_id", "date", "time_id", "theme_id", "store_id");
     }
 
     @Override
@@ -116,10 +120,13 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("store_id", reservation.getStoreId());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return Reservation.reconstruct(id, reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return Reservation.reconstruct(id, reservation.getMember(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme(), ReservationStatus.BOOKED, null, 0L,
+                reservation.getStoreId());
     }
 
     @Override
@@ -174,6 +181,15 @@ public class ReservationJdbcDao implements ReservationDao {
                 ORDER BY r.date DESC, t.start_at
                 """;
         return jdbcTemplate.query(sql, new MapSqlParameterSource("memberId", memberId), ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findAllByStoreId(Long storeId) {
+        String sql = BASE_SELECT + """
+                WHERE r.store_id = :storeId
+                ORDER BY r.date DESC, t.start_at
+                """;
+        return jdbcTemplate.query(sql, new MapSqlParameterSource("storeId", storeId), ROW_MAPPER);
     }
 
     @Override

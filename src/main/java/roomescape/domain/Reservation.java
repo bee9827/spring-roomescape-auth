@@ -10,6 +10,7 @@ public class Reservation {
     private final Long id;
     private final Member member;
     private final Theme theme;
+    private final Long storeId;
     private final long version;
     private LocalDate date;
     private Time time;
@@ -22,36 +23,43 @@ public class Reservation {
         this.date = builder.date;
         this.time = builder.time;
         this.theme = builder.theme;
+        this.storeId = builder.storeId;
         this.status = builder.status;
         this.deletedAt = builder.deletedAt;
         this.version = builder.version;
     }
 
-    public static Reservation createByUser(Member member, LocalDate date, Time time, Theme theme, LocalDateTime now) {
+    public static Reservation createByUser(Member member, LocalDate date, Time time, Theme theme,
+                                           Long storeId, LocalDateTime now) {
         if (time.isReservationBefore(now, date)) {
             throw new BusinessRuleViolationException("지난 시간에 대한 예약 생성은 불가능합니다.");
         }
         return new Builder()
-                .member(member).date(date).time(time).theme(theme)
+                .member(member).date(date).time(time).theme(theme).storeId(storeId)
                 .build();
     }
 
     public static Reservation createByAdmin(Member member, LocalDate date, Time time, Theme theme) {
+        return createByAdmin(member, date, time, theme, null);
+    }
+
+    public static Reservation createByAdmin(Member member, LocalDate date, Time time, Theme theme, Long storeId) {
         return new Builder()
-                .member(member).date(date).time(time).theme(theme)
+                .member(member).date(date).time(time).theme(theme).storeId(storeId)
                 .build();
     }
 
     public static Reservation reconstruct(Long id, Member member, LocalDate date, Time time, Theme theme,
-                                          ReservationStatus status, LocalDateTime deletedAt, long version) {
+                                          ReservationStatus status, LocalDateTime deletedAt, long version,
+                                          Long storeId) {
         return new Builder()
-                .id(id).member(member).date(date).time(time).theme(theme)
+                .id(id).member(member).date(date).time(time).theme(theme).storeId(storeId)
                 .status(status).deletedAt(deletedAt).version(version)
                 .build();
     }
 
     public static Reservation reconstruct(Long id, Member member, LocalDate date, Time time, Theme theme) {
-        return reconstruct(id, member, date, time, theme, ReservationStatus.BOOKED, null, 0L);
+        return reconstruct(id, member, date, time, theme, ReservationStatus.BOOKED, null, 0L, null);
     }
 
     public void cancelByMember(Long memberId, LocalDateTime now) {
@@ -110,6 +118,7 @@ public class Reservation {
     public LocalDate getDate() { return date; }
     public Time getTime() { return time; }
     public Theme getTheme() { return theme; }
+    public Long getStoreId() { return storeId; }
     public ReservationStatus getStatus() { return status; }
     public long getVersion() { return version; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
@@ -120,6 +129,7 @@ public class Reservation {
         private LocalDate date;
         private Time time;
         private Theme theme;
+        private Long storeId;
         private ReservationStatus status = ReservationStatus.BOOKED;
         private LocalDateTime deletedAt;
         private long version = 0L;
@@ -146,6 +156,11 @@ public class Reservation {
 
         Builder theme(Theme theme) {
             this.theme = theme;
+            return this;
+        }
+
+        Builder storeId(Long storeId) {
+            this.storeId = storeId;
             return this;
         }
 

@@ -75,8 +75,8 @@ class ReservationServiceTest {
         savedTime2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
         savedTheme1 = themeDao.insert(new Theme(new Name("방탈출 이름1"), "http://thumbnail_url", "방탈출을 할 수 있다."));
         savedTheme2 = themeDao.insert(new Theme(new Name("방탈출 이름2"), "http://thumbnail_url", "방탈출을 할 수 있다."));
-        requestDto1 = new ReservationRequestDto(LocalDate.now().plusDays(1), savedTime1.getId(), savedTheme1.getId());
-        requestDto2 = new ReservationRequestDto(LocalDate.now().plusDays(2), savedTime2.getId(), savedTheme2.getId());
+        requestDto1 = new ReservationRequestDto(LocalDate.now().plusDays(1), savedTime1.getId(), savedTheme1.getId(), null);
+        requestDto2 = new ReservationRequestDto(LocalDate.now().plusDays(2), savedTime2.getId(), savedTheme2.getId(), null);
     }
 
     @Nested
@@ -95,7 +95,7 @@ class ReservationServiceTest {
         @Test
         @DisplayName("시간이 존재하지 않으면 예외를 반환한다")
         void throwsWhenTimeNotFound() {
-            ReservationRequestDto dto = new ReservationRequestDto(LocalDate.now().plusDays(1), -1L, savedTheme1.getId());
+            ReservationRequestDto dto = new ReservationRequestDto(LocalDate.now().plusDays(1), -1L, savedTheme1.getId(), null);
 
             assertThatThrownBy(() -> reservationService.create(member, dto))
                     .isInstanceOf(EntityNotFoundException.class);
@@ -104,7 +104,7 @@ class ReservationServiceTest {
         @Test
         @DisplayName("테마가 존재하지 않으면 예외를 반환한다")
         void throwsWhenThemeNotFound() {
-            ReservationRequestDto dto = new ReservationRequestDto(LocalDate.now().plusDays(1), savedTime1.getId(), -1L);
+            ReservationRequestDto dto = new ReservationRequestDto(LocalDate.now().plusDays(1), savedTime1.getId(), -1L, null);
 
             assertThatThrownBy(() -> reservationService.create(member, dto))
                     .isInstanceOf(EntityNotFoundException.class);
@@ -123,7 +123,7 @@ class ReservationServiceTest {
         @DisplayName("과거 날짜로 예약을 생성하면 예외를 반환한다")
         void throwsWhenPastDate() {
             ReservationRequestDto pastDto = new ReservationRequestDto(
-                    LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
+                    LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId(), null);
 
             assertThatThrownBy(() -> reservationService.create(member, pastDto))
                     .isInstanceOf(BusinessRuleViolationException.class);

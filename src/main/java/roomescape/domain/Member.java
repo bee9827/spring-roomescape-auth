@@ -10,17 +10,27 @@ public class Member {
     private final String email;
     private final String password;
     private final MemberRole role;
+    private final Long storeId;
 
     public Member(Long id, String name, String email, String password, MemberRole role) {
+        this(id, name, email, password, role, null);
+    }
+
+    public Member(Long id, String name, String email, String password, MemberRole role, Long storeId) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.storeId = storeId;
     }
 
     public boolean isAdmin() {
         return role == MemberRole.ADMIN;
+    }
+
+    public boolean isManager() {
+        return role == MemberRole.MANAGER;
     }
 
     public boolean matchesPassword(String rawPassword, PasswordEncoder encoder) {
@@ -46,6 +56,10 @@ public class Member {
 
     public MemberRole getRole() {
         return role;
+    }
+
+    public Long getStoreId() {
+        return storeId;
     }
 
     @Override

@@ -1,5 +1,10 @@
+INSERT INTO stores(name) VALUES ('강남점');
+INSERT INTO stores(name) VALUES ('홍대점');
+
 INSERT INTO members(name, email, password, role) VALUES ('어드민', 'admin@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN');
 INSERT INTO members(name, email, password, role) VALUES ('유저', 'user@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER');
+INSERT INTO members(name, email, password, role, store_id) VALUES ('강남매니저', 'manager1@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'MANAGER', 1);
+INSERT INTO members(name, email, password, role, store_id) VALUES ('홍대매니저', 'manager2@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'MANAGER', 2);
 
 INSERT INTO times(start_at) values ('10:00');
 INSERT INTO times(start_at) values ('12:00');

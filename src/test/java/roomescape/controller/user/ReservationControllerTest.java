@@ -121,7 +121,7 @@ class ReservationControllerTest {
         @Test
         @DisplayName("유효한 요청으로 예약을 생성하면 201을 반환한다")
         void createsReservation() {
-            ReservationRequestDto requestDto = new ReservationRequestDto(LocalDate.of(2026, 5, 10), 1L, 1L);
+            ReservationRequestDto requestDto = new ReservationRequestDto(LocalDate.of(2026, 5, 10), 1L, 1L, null);
             given(reservationService.create(any(), any())).willReturn(reservation);
             ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 

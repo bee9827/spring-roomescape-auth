@@ -73,8 +73,8 @@ class AdminReservationServiceTest {
         savedTime2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
         savedTheme1 = themeDao.insert(new Theme(new Name("방탈출 이름1"), "http://thumbnail_url", "방탈출을 할 수 있다."));
         savedTheme2 = themeDao.insert(new Theme(new Name("방탈출 이름2"), "http://thumbnail_url", "방탈출을 할 수 있다."));
-        requestDto1 = new AdminReservationRequestDto(member.getId(), LocalDate.now().plusDays(1), savedTime1.getId(), savedTheme1.getId());
-        requestDto2 = new AdminReservationRequestDto(member.getId(), LocalDate.now().plusDays(2), savedTime2.getId(), savedTheme2.getId());
+        requestDto1 = new AdminReservationRequestDto(member.getId(), LocalDate.now().plusDays(1), savedTime1.getId(), savedTheme1.getId(), null);
+        requestDto2 = new AdminReservationRequestDto(member.getId(), LocalDate.now().plusDays(2), savedTime2.getId(), savedTheme2.getId(), null);
     }
 
     @Nested
@@ -143,7 +143,7 @@ class AdminReservationServiceTest {
         @DisplayName("과거 날짜로도 예약을 생성한다")
         void createsReservationWithPastDate() {
             AdminReservationRequestDto pastDto = new AdminReservationRequestDto(
-                    member.getId(), LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId());
+                    member.getId(), LocalDate.now().minusDays(1), savedTime1.getId(), savedTheme1.getId(), null);
 
             Reservation saved = adminReservationService.createByAdmin(pastDto);
 

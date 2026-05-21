@@ -79,6 +79,6 @@ public class ReservationService {
                 request.date())) {
             throw new DuplicateEntityException("이미 존재하는 예약이 있습니다.");
         }
-        return Reservation.createByUser(member, request.date(), time, theme, now);
+        return Reservation.createByUser(member, request.date(), time, theme, request.storeId(), now);
     }
 }

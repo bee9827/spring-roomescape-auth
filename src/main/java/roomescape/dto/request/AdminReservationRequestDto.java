@@ -7,6 +7,7 @@ public record AdminReservationRequestDto(
         @NotNull Long memberId,
         @NotNull LocalDate date,
         @NotNull Long timeId,
-        @NotNull Long themeId
+        @NotNull Long themeId,
+        Long storeId
 ) {
 }

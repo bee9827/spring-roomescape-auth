@@ -10,6 +10,8 @@ public interface ReservationDao extends CommonDao<Reservation> {
 
     List<Reservation> findAllByMemberId(Long memberId);
 
+    List<Reservation> findAllByStoreId(Long storeId);
+
     long count();
 
     boolean selectForUpdateByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date);

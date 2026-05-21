@@ -107,7 +107,7 @@ class AdminReservationControllerTest {
         @DisplayName("유효한 요청으로 예약을 생성하면 201을 반환한다")
         void createsReservation() {
             AdminReservationRequestDto requestDto = new AdminReservationRequestDto(
-                    admin.getId(), reservation.getDate(), time.getId(), theme.getId());
+                    admin.getId(), reservation.getDate(), time.getId(), theme.getId(), null);
             given(reservationService.createByAdmin(any(AdminReservationRequestDto.class))).willReturn(reservation);
             AdminReservationResponseDto expected = AdminReservationResponseDto.from(reservation);
 
