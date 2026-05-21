@@ -59,7 +59,7 @@ public class ReservationService {
     public Reservation updateByUser(Long id, Long memberId, ReservationPatchDto request) {
         Reservation reservation = findActiveById(id);
         if (!reservation.isOwnedBy(memberId)) {
-            throw new BusinessRuleViolationException("본인의 예약만 수정할 수 있습니다.");
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
         }
         Time time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));

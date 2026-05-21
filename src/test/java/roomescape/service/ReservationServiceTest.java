@@ -205,7 +205,7 @@ class ReservationServiceTest {
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime2.getId());
 
             assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), -1L, updateDto))
-                    .isInstanceOf(BusinessRuleViolationException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -257,7 +257,7 @@ class ReservationServiceTest {
                     Reservation.createByAdmin(member, LocalDate.now().plusDays(1), savedTime1, savedTheme1));
 
             assertThatThrownBy(() -> reservationService.cancel(saved.getId(), -1L))
-                    .isInstanceOf(BusinessRuleViolationException.class);
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.EntityNotFoundException;
 
 public class Reservation {
     private final Long id;
@@ -55,7 +56,7 @@ public class Reservation {
 
     public void cancelByMember(Long memberId, LocalDateTime now) {
         if (!isOwnedBy(memberId)) {
-            throw new BusinessRuleViolationException("본인의 예약만 취소할 수 있습니다.");
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
         }
         if (getTime().isReservationBefore(now, date)) {
             throw new BusinessRuleViolationException("지난 예약은 취소 불가능합니다.");
