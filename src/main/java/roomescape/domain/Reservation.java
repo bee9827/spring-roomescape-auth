@@ -73,6 +73,14 @@ public class Reservation {
         this.deletedAt = now;
     }
 
+    public void updateByMember(Long memberId, LocalDate date, Time time) {
+        if (!isOwnedBy(memberId)) {
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
+        }
+        this.date = date;
+        this.time = time;
+    }
+
     public void update(LocalDate date, Time time) {
         this.date = date;
         this.time = time;

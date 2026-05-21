@@ -58,12 +58,9 @@ public class ReservationService {
     @Transactional
     public Reservation updateByUser(Long id, Long memberId, ReservationPatchDto request) {
         Reservation reservation = findActiveById(id);
-        if (!reservation.isOwnedBy(memberId)) {
-            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
-        }
         Time time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
-        reservation.update(request.date(), time);
+        reservation.updateByMember(memberId, request.date(), time);
         return reservationDao.update(reservation);
     }
 
