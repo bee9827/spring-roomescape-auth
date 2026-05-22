@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.common.exception.BusinessRuleViolationException;
-import roomescape.common.exception.HiddenResourceException;
 
 public class Reservation {
     private final Long id;
@@ -62,8 +61,7 @@ public class Reservation {
         return reconstruct(id, member, date, time, theme, ReservationStatus.BOOKED, null, 0L, null);
     }
 
-    public void cancelByMember(Long memberId, LocalDateTime now) {
-        validateOwnership(memberId);
+    public void cancelByUser(LocalDateTime now) {
         if (getTime().isReservationBefore(now, date)) {
             throw new BusinessRuleViolationException("지난 예약은 취소 불가능합니다.");
         }
@@ -79,12 +77,6 @@ public class Reservation {
         this.deletedAt = now;
     }
 
-    public void updateByMember(Long memberId, LocalDate date, Time time) {
-        validateOwnership(memberId);
-        this.date = date;
-        this.time = time;
-    }
-
     public void update(LocalDate date, Time time) {
         this.date = date;
         this.time = time;
@@ -92,12 +84,6 @@ public class Reservation {
 
     public boolean isActive() {
         return status == ReservationStatus.BOOKED;
-    }
-
-    private void validateOwnership(Long memberId) {
-        if (!member.getId().equals(memberId)) {
-            throw new HiddenResourceException();
-        }
     }
 
     @Override

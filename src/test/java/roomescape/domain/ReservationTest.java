@@ -2,8 +2,6 @@ package roomescape.domain;
 
 import roomescape.common.exception.BusinessRuleViolationException;
 
-import roomescape.common.exception.InvalidInputException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -51,7 +49,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            assertThatCode(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
+            assertThatCode(() -> reservation.cancelByUser(NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -61,7 +59,7 @@ class ReservationTest {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
             Reservation reservation = Reservation.createByAdmin(MEMBER, NOW.toLocalDate(), time, THEME);
 
-            assertThatThrownBy(() -> reservation.cancelByMember(MEMBER.getId(), NOW))
+            assertThatThrownBy(() -> reservation.cancelByUser(NOW))
                     .isInstanceOf(BusinessRuleViolationException.class);
         }
     }

@@ -39,7 +39,8 @@ import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
 
 @JdbcTest
-@Import({ReservationService.class, ReservationJdbcDao.class, TimeJdbcDao.class, ThemeJdbcDao.class, MemberJdbcDao.class})
+@Import({ReservationService.class, ReservationAuthorizationService.class, ReservationJdbcDao.class, TimeJdbcDao.class,
+        ThemeJdbcDao.class, MemberJdbcDao.class})
 @ActiveProfiles("test")
 class ReservationServiceTest {
 
@@ -204,6 +205,16 @@ class ReservationServiceTest {
         void throwsWhenMemberMismatch() {
             Reservation saved = reservationService.create(member, requestDto1);
             ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), savedTime2.getId());
+
+            assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), -1L, updateDto))
+                    .isInstanceOf(HiddenResourceException.class);
+        }
+
+        @Test
+        @DisplayName("다른 사람의 예약을 존재하지 않는 시간으로 수정해도 숨김 예외를 반환한다")
+        void throwsHiddenResourceWhenMemberMismatchWithUnknownTime() {
+            Reservation saved = reservationService.create(member, requestDto1);
+            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.now().plusDays(3), -1L);
 
             assertThatThrownBy(() -> reservationService.updateByUser(saved.getId(), -1L, updateDto))
                     .isInstanceOf(HiddenResourceException.class);

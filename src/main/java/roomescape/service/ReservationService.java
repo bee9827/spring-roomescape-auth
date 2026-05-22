@@ -23,11 +23,18 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
+    private final ReservationAuthorizationService authorizationService;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+    public ReservationService(
+            ReservationDao reservationDao,
+            TimeDao timeDao,
+            ThemeDao themeDao,
+            ReservationAuthorizationService authorizationService
+    ) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
+        this.authorizationService = authorizationService;
     }
 
     public List<Reservation> findAllByMemberId(Long memberId) {
@@ -55,18 +62,20 @@ public class ReservationService {
 
     @Transactional
     public Reservation updateByUser(Long id, Long memberId, ReservationPatchDto request) {
+        authorizationService.validateMemberCanAccess(memberId, id);
         Reservation reservation = findActiveById(id);
         Time time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간입니다."));
-        reservation.updateByMember(memberId, request.date(), time);
+        reservation.update(request.date(), time);
         return reservationDao.update(reservation);
     }
 
     @Transactional
     public void cancel(Long id, Long memberId) {
+        authorizationService.validateMemberCanAccess(memberId, id);
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
-        reservation.cancelByMember(memberId, LocalDateTime.now());
+        reservation.cancelByUser(LocalDateTime.now());
         reservationDao.update(reservation);
     }
 
