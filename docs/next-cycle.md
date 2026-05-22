@@ -53,3 +53,15 @@
 - [ ] **SELECT ... FOR SHARE가 필요한 시나리오**
   → 맥락: 읽은 값 기반 계산 중 다른 트랜잭션의 수정을 막아야 하는 경우
   → 출처: log_17
+
+---
+
+## 흐름 파악 (Session)
+
+- [ ] **EventListener는 어떻게 작동하는가**
+  → 맥락: @WebListener가 이벤트를 받을 때 계속 대기(blocking)하고 있는 건가, 아니면 다른 메커니즘인가
+  → 출처: log_18
+
+- [ ] **Session 작동 흐름**
+  → 맥락: 쿠키에 JSESSIONID가 담기고 Tomcat이 이를 매핑하는 전체 라이프사이클
+  → 출처: log_18
