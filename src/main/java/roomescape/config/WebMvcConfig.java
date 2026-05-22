@@ -5,30 +5,29 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.AdminInterceptor;
+import roomescape.auth.AdminFilter;
 import roomescape.auth.AuthFilter;
 import roomescape.auth.LoginMemberArgumentResolver;
-import roomescape.auth.ManagerInterceptor;
+import roomescape.auth.ManagerFilter;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    private final AdminInterceptor adminInterceptor;
-    private final ManagerInterceptor managerInterceptor;
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final AuthFilter authFilter;
+    private final AdminFilter adminFilter;
+    private final ManagerFilter managerFilter;
 
     public WebMvcConfig(
-            AdminInterceptor adminInterceptor,
-            ManagerInterceptor managerInterceptor,
             LoginMemberArgumentResolver loginMemberArgumentResolver,
-            AuthFilter authFilter
+            AuthFilter authFilter,
+            AdminFilter adminFilter,
+            ManagerFilter managerFilter
     ) {
-        this.adminInterceptor = adminInterceptor;
-        this.managerInterceptor = managerInterceptor;
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
         this.authFilter = authFilter;
+        this.adminFilter = adminFilter;
+        this.managerFilter = managerFilter;
     }
 
     @Bean
@@ -38,12 +37,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return registration;
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**");
-        registry.addInterceptor(managerInterceptor)
-                .addPathPatterns("/manager/**");
+    @Bean
+    public FilterRegistrationBean<AdminFilter> adminFilterRegistration() {
+        FilterRegistrationBean<AdminFilter> registration = new FilterRegistrationBean<>(adminFilter);
+        registration.addUrlPatterns("/admin/*");
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean<ManagerFilter> managerFilterRegistration() {
+        FilterRegistrationBean<ManagerFilter> registration = new FilterRegistrationBean<>(managerFilter);
+        registration.addUrlPatterns("/manager/*");
+        return registration;
     }
 
     @Override
