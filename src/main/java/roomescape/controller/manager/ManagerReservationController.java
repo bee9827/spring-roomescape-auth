@@ -15,20 +15,26 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.response.AdminReservationResponseDto;
-import roomescape.service.ManagerReservationService;
+import roomescape.service.AdminReservationService;
+import roomescape.service.ReservationAuthorizationService;
 
 @RestController
 @RequestMapping("/manager/reservations")
 public class ManagerReservationController {
-    private final ManagerReservationService managerReservationService;
+    private final AdminReservationService reservationService;
+    private final ReservationAuthorizationService authorizationService;
 
-    public ManagerReservationController(ManagerReservationService managerReservationService) {
-        this.managerReservationService = managerReservationService;
+    public ManagerReservationController(
+            AdminReservationService reservationService,
+            ReservationAuthorizationService authorizationService
+    ) {
+        this.reservationService = reservationService;
+        this.authorizationService = authorizationService;
     }
 
     @GetMapping
     public ResponseEntity<List<AdminReservationResponseDto>> findAll(@LoginMember Member manager) {
-        List<AdminReservationResponseDto> responses = managerReservationService.findAllByStore(manager)
+        List<AdminReservationResponseDto> responses = reservationService.findAllByStoreId(manager.getStoreId())
                 .stream()
                 .map(AdminReservationResponseDto::from)
                 .toList();
@@ -41,13 +47,15 @@ public class ManagerReservationController {
             @LoginMember Member manager,
             @Valid @RequestBody ReservationPatchDto request
     ) {
-        Reservation updated = managerReservationService.update(id, manager, request);
+        authorizationService.validateManagerCanAccess(manager, id);
+        Reservation updated = reservationService.update(id, request);
         return ResponseEntity.ok(AdminReservationResponseDto.from(updated));
     }
 
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id, @LoginMember Member manager) {
-        managerReservationService.cancel(id, manager);
+        authorizationService.validateManagerCanAccess(manager, id);
+        reservationService.cancelByAdmin(id);
         return ResponseEntity.noContent().build();
     }
 }

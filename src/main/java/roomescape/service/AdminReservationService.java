@@ -46,6 +46,10 @@ public class AdminReservationService {
         return new PageResponse<>(content, totalElements, totalPages, page, size);
     }
 
+    public List<Reservation> findAllByStoreId(Long storeId) {
+        return reservationDao.findAllByStoreId(storeId);
+    }
+
     public Reservation findById(Long id) {
         return reservationDao.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
