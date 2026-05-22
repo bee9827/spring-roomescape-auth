@@ -216,18 +216,10 @@ document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeDialog();
 });
 
-/* ── auth check ── */
-async function checkAuth() {
-  const r = await fetch('/manager/reservations');
-  if (r.status === 401) { location.href = '/login?redirect=/manager'; return false; }
-  if (r.status === 403) { location.href = '/'; return false; }
-  return true;
-}
-
 /* ── load times ── */
 async function loadTimes() {
   try {
-    const r = await fetch('/admin/times');
+    const r = await fetch('/manager/times');
     if (r.ok) times = await r.json();
   } catch {}
 }
@@ -274,6 +266,8 @@ async function loadReservations() {
   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">불러오는 중...</td></tr>';
   try {
     const r = await fetch('/manager/reservations');
+    if (r.status === 401) { location.href = '/login?redirect=/manager'; return; }
+    if (r.status === 403) { location.href = '/'; return; }
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
     renderRows(data);
@@ -353,7 +347,6 @@ function cancelReservation(id) {
 
 /* ── init ── */
 (async () => {
-  if (!await checkAuth()) return;
   await loadTimes();
   loadReservations();
 })();

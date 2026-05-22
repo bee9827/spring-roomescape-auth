@@ -1,0 +1,12 @@
+package roomescape.auth;
+
+public final class SessionUtils {
+    private SessionUtils() {
+    }
+
+    public static Long parseMemberId(Object raw) {
+        if (raw instanceof Long l) return l;
+        if (raw instanceof String s) return Long.parseLong(s);
+        return null;
+    }
+}
