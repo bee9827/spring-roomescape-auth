@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.session;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

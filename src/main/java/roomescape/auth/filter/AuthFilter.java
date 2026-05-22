@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

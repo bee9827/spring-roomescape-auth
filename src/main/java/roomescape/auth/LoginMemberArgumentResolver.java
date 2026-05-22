@@ -8,6 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.session.SessionUtils;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.common.exception.UnauthenticatedException;
 import roomescape.domain.Member;

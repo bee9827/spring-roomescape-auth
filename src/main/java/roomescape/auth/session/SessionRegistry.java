@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.session;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionAttributeListener;

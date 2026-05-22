@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.filter.OncePerRequestFilter;
+import roomescape.auth.session.SessionUtils;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.common.exception.UnauthenticatedException;
 import roomescape.common.exception.UnauthorizedException;

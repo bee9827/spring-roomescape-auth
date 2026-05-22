@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.session;
 
 public final class SessionUtils {
     private SessionUtils() {
