@@ -58,10 +58,26 @@
 
 ## 흐름 파악 (Session)
 
-- [ ] **EventListener는 어떻게 작동하는가**
-  → 맥락: @WebListener가 이벤트를 받을 때 계속 대기(blocking)하고 있는 건가, 아니면 다른 메커니즘인가
-  → 출처: log_18
+- [x] ~~EventListener는 어떻게 작동하는가~~
+  → 옵저버 패턴. Tomcat이 리스너 목록을 순회해 직접 호출. 같은 스레드에서 동기 실행.
+  → 출처: log_18, log_20
 
-- [ ] **Session 작동 흐름**
-  → 맥락: 쿠키에 JSESSIONID가 담기고 Tomcat이 이를 매핑하는 전체 라이프사이클
-  → 출처: log_18
+- [x] ~~Session 작동 흐름~~
+  → JSESSIONID 쿠키로 Tomcat이 세션 매핑. getSession(false/true) 차이 학습.
+  → 출처: log_18, log_19
+
+---
+
+## 흐름 파악 (JVM)
+
+- [ ] **Java GC 동작 방식 심화**
+  → 맥락: GC 루트란 무엇인가, Minor GC / Major GC 차이
+  → 출처: log_20
+
+---
+
+## 개념 이해 (디자인 패턴)
+
+- [ ] **옵저버, 프록시, 전략 패턴 구조 비교**
+  → 맥락: 옵저버 패턴 이름이 바로 안 나옴. 자주 쓰는 패턴 3개 구조로 비교
+  → 출처: log_20
