@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.InvalidInputException;
@@ -18,9 +17,9 @@ public class MemberService {
     private final MemberDao memberDao;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, PasswordEncoder passwordEncoder) {
         this.memberDao = memberDao;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Member login(LoginRequestDto request) {
