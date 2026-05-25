@@ -24,7 +24,7 @@ import roomescape.domain.vo.Name;
 import roomescape.dto.response.AvailableTimeResponseDto;
 import roomescape.dto.response.TimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
-import roomescape.service.MemberService;
+import roomescape.dao.MemberDao;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
@@ -37,7 +37,7 @@ class ThemeControllerTest {
     @MockitoBean
     private ThemeService themeService;
     @MockitoBean
-    private MemberService memberService;
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {

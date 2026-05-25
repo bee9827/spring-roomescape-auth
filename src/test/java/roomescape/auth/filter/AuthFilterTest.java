@@ -6,25 +6,26 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
-import roomescape.service.MemberService;
 
 class AuthFilterTest {
 
     private AuthFilter authFilter;
-    private MemberService memberService;
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
-        memberService = mock(MemberService.class);
-        authFilter = new AuthFilter(memberService, new ObjectMapper());
+        memberDao = mock(MemberDao.class);
+        authFilter = new AuthFilter(memberDao, new ObjectMapper());
     }
 
     @Test
@@ -63,7 +64,7 @@ class AuthFilterTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         Member member = new Member(1L, "테스트유저", "test@test.com", "password", MemberRole.USER, null);
-        when(memberService.findById(1L)).thenReturn(member);
+        when(memberDao.findById(1L)).thenReturn(Optional.of(member));
 
         boolean[] chainCalled = {false};
         FilterChain filterChain = (req, res) -> chainCalled[0] = true;

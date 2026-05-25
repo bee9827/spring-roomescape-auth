@@ -14,17 +14,16 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import roomescape.auth.session.SessionUtils;
-import roomescape.common.exception.EntityNotFoundException;
+import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
-import roomescape.service.MemberService;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
-    private final MemberService memberService;
+    private final MemberDao memberDao;
     private final ObjectMapper objectMapper;
 
-    public AuthFilter(MemberService memberService, ObjectMapper objectMapper) {
-        this.memberService = memberService;
+    public AuthFilter(MemberDao memberDao, ObjectMapper objectMapper) {
+        this.memberDao = memberDao;
         this.objectMapper = objectMapper;
     }
 
@@ -36,18 +35,17 @@ public class AuthFilter extends OncePerRequestFilter {
             sendUnauthorized(request, response);
             return;
         }
-        try {
-            Long memberId = SessionUtils.parseMemberId(session.getAttribute("memberId"));
-            if (memberId == null) {
-                sendUnauthorized(request, response);
-                return;
-            }
-            Member member = memberService.findById(memberId);
-            request.setAttribute(SessionUtils.LOGIN_MEMBER_ATTRIBUTE, member);
-        } catch (EntityNotFoundException e) {
+        Long memberId = SessionUtils.parseMemberId(session.getAttribute("memberId"));
+        if (memberId == null) {
             sendUnauthorized(request, response);
             return;
         }
+        Member member = memberDao.findById(memberId).orElse(null);
+        if (member == null) {
+            sendUnauthorized(request, response);
+            return;
+        }
+        request.setAttribute(SessionUtils.LOGIN_MEMBER_ATTRIBUTE, member);
         filterChain.doFilter(request, response);
     }
 

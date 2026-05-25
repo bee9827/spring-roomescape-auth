@@ -19,7 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import roomescape.service.MemberService;
+import java.util.Optional;
+import roomescape.dao.MemberDao;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
@@ -41,12 +42,12 @@ class AdminTimeControllerTest {
     @MockitoBean
     private TimeService timeService;
     @MockitoBean
-    private MemberService memberService;
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.mockMvc(mockMvc);
-        given(memberService.findById(admin.getId())).willReturn(admin);
+        given(memberDao.findById(admin.getId())).willReturn(Optional.of(admin));
     }
 
     @Nested

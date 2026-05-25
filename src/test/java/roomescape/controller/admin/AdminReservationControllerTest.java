@@ -34,7 +34,8 @@ import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.response.AdminReservationResponseDto;
 import roomescape.dto.response.PageResponse;
 import roomescape.service.AdminReservationService;
-import roomescape.service.MemberService;
+import java.util.Optional;
+import roomescape.dao.MemberDao;
 
 @WebMvcTest(AdminReservationController.class)
 class AdminReservationControllerTest {
@@ -49,12 +50,12 @@ class AdminReservationControllerTest {
     @MockitoBean
     private AdminReservationService reservationService;
     @MockitoBean
-    private MemberService memberService;
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.mockMvc(mockMvc);
-        given(memberService.findById(admin.getId())).willReturn(admin);
+        given(memberDao.findById(admin.getId())).willReturn(Optional.of(admin));
     }
 
     @Nested

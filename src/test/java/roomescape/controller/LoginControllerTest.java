@@ -19,6 +19,7 @@ import roomescape.common.exception.InvalidInputException;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.dto.request.LoginRequestDto;
+import roomescape.dao.MemberDao;
 import roomescape.service.MemberService;
 
 @WebMvcTest(LoginController.class)
@@ -30,6 +31,8 @@ class LoginControllerTest {
     private MockMvc mockMvc;
     @MockitoBean
     private MemberService memberService;
+    @MockitoBean
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
