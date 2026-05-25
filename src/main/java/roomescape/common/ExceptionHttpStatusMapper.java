@@ -23,7 +23,11 @@ public class ExceptionHttpStatusMapper {
     );
 
     public static HttpStatus resolve(DomainException e) {
-        return STATUS_MAP.getOrDefault(e.getClass(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return STATUS_MAP.entrySet().stream()
+                .filter(entry -> entry.getKey().isAssignableFrom(e.getClass()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ExceptionHttpStatusMapper() {

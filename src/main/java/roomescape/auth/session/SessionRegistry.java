@@ -32,8 +32,11 @@ public class SessionRegistry implements HttpSessionListener, HttpSessionAttribut
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         HttpSession session = se.getSession();
-        if (session.getAttribute("memberId") instanceof Long memberId) {
-            sessions.remove(memberId, session);
+        try {
+            if (session.getAttribute("memberId") instanceof Long memberId) {
+                sessions.remove(memberId, session);
+            }
+        } catch (IllegalStateException ignored) {
         }
     }
 }

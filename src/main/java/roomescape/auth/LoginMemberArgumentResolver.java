@@ -39,6 +39,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (request == null) {
             throw new UnauthenticatedException();
         }
+        Object cached = request.getAttribute(SessionUtils.LOGIN_MEMBER_ATTRIBUTE);
+        if (cached instanceof Member member) {
+            return member;
+        }
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -49,7 +53,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 throw new UnauthenticatedException();
             }
             return memberService.findById(memberId);
-        } catch (NumberFormatException | EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new UnauthenticatedException();
         }
     }

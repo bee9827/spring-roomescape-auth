@@ -14,8 +14,6 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.filter.OncePerRequestFilter;
 import roomescape.auth.session.SessionUtils;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.common.exception.UnauthenticatedException;
-import roomescape.common.exception.UnauthorizedException;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
@@ -40,12 +38,17 @@ public abstract class RoleCheckFilter extends OncePerRequestFilter {
         }
         try {
             Long memberId = SessionUtils.parseMemberId(session.getAttribute("memberId"));
+            if (memberId == null) {
+                sendError(request, response, HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
+                return;
+            }
             Member member = memberService.findById(memberId);
             if (!hasRequiredRole(member)) {
                 sendError(request, response, HttpStatus.FORBIDDEN, "권한이 없습니다.");
                 return;
             }
-        } catch (NumberFormatException | EntityNotFoundException e) {
+            request.setAttribute(SessionUtils.LOGIN_MEMBER_ATTRIBUTE, member);
+        } catch (EntityNotFoundException e) {
             sendError(request, response, HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
             return;
         }
