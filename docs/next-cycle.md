@@ -10,8 +10,8 @@
   → AuthFilter, AdminFilter, ManagerFilter 구현 완료. ProblemDetail JSON 직접 직렬화 방식 적용.
   → 출처: log_14, log_15
 
-- [ ] **OncePerRequestFilter에서 REQUEST와 FORWARD 모두 처리하려면?**
-  → 맥락: 들어올 때도, 포워딩할 때도 Filter를 실행하고 싶을 때 어떻게 설정하는가
+- [x] ~~OncePerRequestFilter에서 REQUEST와 FORWARD 모두 처리하려면?~~
+  → JSP/정적 리소스 forward 시 Interceptor 미동작. Spring Security도 Filter 기반인 이유. 이 프로젝트는 REST API라 forward 없어서 실질적 차이 없음. 인증/인가는 Filter가 적절한 위치.
   → 출처: log_15
 
 ---
@@ -30,25 +30,33 @@
 
 ## 흐름 파악
 
-- [ ] **Interceptor 구현이 AOP 기반인가?**
-  → 맥락: AOP(프록시)와 Interceptor(DispatcherServlet 내부 호출)의 차이가 궁금함
+- [x] ~~Interceptor 구현이 AOP 기반인가?~~
+  → AOP는 프록시 기반. Interceptor는 DispatcherServlet이 HandlerExecutionChain에서 직접 호출. 프록시 없음.
   → 출처: log_15
 
 ---
 
 ## 실전 판단
 
-- [ ] **도메인 예외와 HTTP 예외 분리 후 실제 프로젝트 적용 회고**
-  → 맥락: `InvalidInputException`, `BusinessRuleViolationException` 등으로 분리한 뒤 실제로 의미가 명확해졌는지 판단
-  → 출처: log_14 (구현 완료, 회고 필요)
+- [x] ~~도메인 예외와 HTTP 예외 분리 후 실제 프로젝트 적용 회고~~
+  → 의미는 명확해짐. 단, ExceptionHttpStatusMapper가 관리 포인트가 됨 — 매핑 누락 시 조용히 500 반환. isAssignableFrom으로 서브클래스 커버는 했으나 누락 자체를 막는 방법은 없음.
+  → 출처: log_14
 
 ---
 
 ## 개념 이해
 
-- [ ] **JWT 구조와 동작 방식**
-  → 맥락: 토큰 방식 인증을 이해했으니 실제 JWT가 어떻게 생겼는지, 서버가 어떻게 검증하는지
-  → 출처: log_16
+- [x] ~~JWT 구조와 동작 방식~~
+  → 헤더.페이로드.서명 구조. 복호화 아닌 재계산 후 비교로 검증. DB 조회 없음. 스케일 아웃에 유리. 로그아웃/동시 로그인 방지는 서버 저장 필요.
+  → 출처: log_16, log_22
+
+- [ ] **JWT 코드 적용**
+  → 맥락: 개념 이해 완료. Spring에서 JWT 발급/검증 구현
+  → 종류: 코드 적용
+
+- [ ] **JWT Refresh Token 전략**
+  → 맥락: Access Token 만료 처리, Refresh Token으로 갱신하는 흐름
+  → 종류: 흐름 파악
 
 ---
 
