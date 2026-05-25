@@ -40,14 +40,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<AdminFilter> adminFilterRegistration() {
         FilterRegistrationBean<AdminFilter> registration = new FilterRegistrationBean<>(adminFilter);
-        registration.addUrlPatterns("/admin/*");
+        registration.addUrlPatterns("/admin", "/admin/*");
         return registration;
     }
 
     @Bean
     public FilterRegistrationBean<ManagerFilter> managerFilterRegistration() {
         FilterRegistrationBean<ManagerFilter> registration = new FilterRegistrationBean<>(managerFilter);
-        registration.addUrlPatterns("/manager/*");
+        registration.addUrlPatterns("/manager", "/manager/*");
         return registration;
     }
 

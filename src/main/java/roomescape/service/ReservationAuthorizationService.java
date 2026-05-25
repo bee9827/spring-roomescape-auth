@@ -26,6 +26,9 @@ public class ReservationAuthorizationService {
     }
 
     public void validateManagerCanAccess(Long storeId, Long reservationId) {
+        if (storeId == null) {
+            throw new UnauthorizedException();
+        }
         Reservation reservation = findReservation(reservationId);
         if (!Objects.equals(storeId, reservation.getStoreId())) {
             throw new UnauthorizedException();

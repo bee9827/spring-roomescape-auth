@@ -73,8 +73,7 @@ public class ReservationService {
     @Transactional
     public void cancel(Long id, Long memberId) {
         authorizationService.validateMemberCanAccess(memberId, id);
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = findActiveById(id);
         reservation.cancelByUser(LocalDateTime.now());
         reservationDao.update(reservation);
     }
