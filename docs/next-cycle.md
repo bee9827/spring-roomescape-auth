@@ -6,13 +6,25 @@
 
 ## 코드 적용
 
-- [ ] **OncePerRequestFilter로 인증 필터 구현**
-  → 맥락: Interceptor의 포워딩 한계를 Filter로 해결. DispatcherType 설정으로 REQUEST/FORWARD 제어
+- [x] ~~OncePerRequestFilter로 인증 필터 구현~~
+  → AuthFilter, AdminFilter, ManagerFilter 구현 완료. ProblemDetail JSON 직접 직렬화 방식 적용.
   → 출처: log_14, log_15
 
 - [ ] **OncePerRequestFilter에서 REQUEST와 FORWARD 모두 처리하려면?**
   → 맥락: 들어올 때도, 포워딩할 때도 Filter를 실행하고 싶을 때 어떻게 설정하는가
   → 출처: log_15
+
+---
+
+## 개념 이해 (Filter/직렬화)
+
+- [x] ~~Filter에서 ObjectMapper를 직접 쓰는 이유~~
+  → Filter는 DispatcherServlet 앞단. HttpMessageConverter 선택 메커니즘 동작 안 함. ObjectMapper 직접 주입해서 직렬화.
+  → 출처: log_21
+
+- [x] ~~HttpServletRequest 역직렬화 시점~~
+  → HttpServletRequest는 raw InputStream. 역직렬화는 ArgumentResolver 단계에서 발생.
+  → 출처: log_21
 
 ---
 
