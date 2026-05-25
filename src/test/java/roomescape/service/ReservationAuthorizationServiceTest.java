@@ -99,7 +99,7 @@ class ReservationAuthorizationServiceTest {
         @Test
         @DisplayName("매니저는 자신의 매장 예약에 접근할 수 있다")
         void allowsSameStoreManager() {
-            assertThatCode(() -> authorizationService.validateManagerCanAccess(manager, reservation.getId()))
+            assertThatCode(() -> authorizationService.validateManagerCanAccess(manager.getStoreId(), reservation.getId()))
                     .doesNotThrowAnyException();
         }
 
@@ -109,7 +109,7 @@ class ReservationAuthorizationServiceTest {
             Member otherStoreManager = new Member(99L, "홍대매니저", "manager2@test.com", "password",
                     MemberRole.MANAGER, storeId + 1);
 
-            assertThatThrownBy(() -> authorizationService.validateManagerCanAccess(otherStoreManager, reservation.getId()))
+            assertThatThrownBy(() -> authorizationService.validateManagerCanAccess(otherStoreManager.getStoreId(), reservation.getId()))
                     .isInstanceOf(UnauthorizedException.class);
         }
     }

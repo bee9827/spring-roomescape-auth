@@ -1,25 +1,30 @@
 package roomescape.auth.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
+import roomescape.service.MemberService;
 
 class AuthFilterTest {
 
     private AuthFilter authFilter;
+    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
-        authFilter = new AuthFilter(new ObjectMapper());
+        memberService = mock(MemberService.class);
+        authFilter = new AuthFilter(memberService, new ObjectMapper());
     }
 
     @Test
@@ -56,6 +61,9 @@ class AuthFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/reservations");
         request.setSession(session);
         MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Member member = new Member(1L, "테스트유저", "test@test.com", "password", MemberRole.USER, null);
+        when(memberService.findById(1L)).thenReturn(member);
 
         boolean[] chainCalled = {false};
         FilterChain filterChain = (req, res) -> chainCalled[0] = true;

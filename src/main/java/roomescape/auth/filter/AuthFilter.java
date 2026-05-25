@@ -13,12 +13,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import roomescape.auth.session.SessionUtils;
+import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.Member;
+import roomescape.service.MemberService;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
+    private final MemberService memberService;
     private final ObjectMapper objectMapper;
 
-    public AuthFilter(ObjectMapper objectMapper) {
+    public AuthFilter(MemberService memberService, ObjectMapper objectMapper) {
+        this.memberService = memberService;
         this.objectMapper = objectMapper;
     }
 
@@ -27,6 +33,18 @@ public class AuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("memberId") == null) {
+            sendUnauthorized(request, response);
+            return;
+        }
+        try {
+            Long memberId = SessionUtils.parseMemberId(session.getAttribute("memberId"));
+            if (memberId == null) {
+                sendUnauthorized(request, response);
+                return;
+            }
+            Member member = memberService.findById(memberId);
+            request.setAttribute(SessionUtils.LOGIN_MEMBER_ATTRIBUTE, member);
+        } catch (EntityNotFoundException e) {
             sendUnauthorized(request, response);
             return;
         }

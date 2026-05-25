@@ -38,10 +38,6 @@ public abstract class RoleCheckFilter extends OncePerRequestFilter {
         }
         try {
             Long memberId = SessionUtils.parseMemberId(session.getAttribute("memberId"));
-            if (memberId == null) {
-                sendError(request, response, HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
-                return;
-            }
             Member member = memberService.findById(memberId);
             if (!hasRequiredRole(member)) {
                 sendError(request, response, HttpStatus.FORBIDDEN, "권한이 없습니다.");

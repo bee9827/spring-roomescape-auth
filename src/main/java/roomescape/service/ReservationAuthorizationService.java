@@ -7,7 +7,6 @@ import roomescape.common.exception.EntityNotFoundException;
 import roomescape.common.exception.HiddenResourceException;
 import roomescape.common.exception.UnauthorizedException;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 
 @Service
@@ -26,9 +25,9 @@ public class ReservationAuthorizationService {
         }
     }
 
-    public void validateManagerCanAccess(Member manager, Long reservationId) {
+    public void validateManagerCanAccess(Long storeId, Long reservationId) {
         Reservation reservation = findReservation(reservationId);
-        if (!Objects.equals(manager.getStoreId(), reservation.getStoreId())) {
+        if (!Objects.equals(storeId, reservation.getStoreId())) {
             throw new UnauthorizedException();
         }
     }
